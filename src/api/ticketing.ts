@@ -2,7 +2,7 @@
 import type { Match } from "../types/match";
 import type { CartItem } from "../types/CartItem";
 
-const API_REST  = "https://worldcup2026.shrp.dev/"; 
+const API_REST  = "https://worldcup2026.shrp.dev"; 
 
 // Récupérer tous les matchs
 export async function getMatches(): Promise<Match[]> {

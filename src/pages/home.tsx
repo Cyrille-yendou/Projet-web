@@ -1,6 +1,6 @@
 
 import { Link, Routes, Route } from 'react-router-dom';
-import MatchDetails from './MatchDetails';
+import MatchDetails from './matchDetails';
 import MatchesList from './MatchList';
 
 export default function Home() {
