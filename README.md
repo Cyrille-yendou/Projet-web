@@ -1,3 +1,7 @@
+Projet collectif - Bamenante Yendouname Cyrille, GROETZINGER Rachel, LAGARDE Priscille
+Groupe 9 Classe M1
+
+
 # React + TypeScript + Vite
 
 This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
