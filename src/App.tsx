@@ -1,12 +1,11 @@
+import { CssBaseline } from "@mui/material";
+import Home from "./components/home";
 
-import Home from './components/home';
-
-function App() {
+export function App() {
   return (
-    <div>
-      <Home/>
-    </div>
+    <>
+      <CssBaseline /> 
+      <Home />
+    </>
   );
 }
-
-export default App;
