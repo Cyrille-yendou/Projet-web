@@ -1,62 +1,128 @@
-import { useState } from "react";
-import { AppBar, Box, Toolbar, Typography, Button } from "@mui/material";
-import { Link } from "react-router-dom";
+import * as React from 'react';
+import AppBar from '@mui/material/AppBar';
+import Toolbar from '@mui/material/Toolbar';
+import Button from '@mui/material/Button';
+import IconButton from '@mui/material/IconButton';
+import Box from '@mui/material/Box';
+import { styled } from '@mui/material/styles';
+import Badge, { badgeClasses } from '@mui/material/Badge';
+import ShoppingCartIcon from '@mui/icons-material/ShoppingCartOutlined';
+import PersonIcon from '@mui/icons-material/Person';
+import useScrollTrigger from '@mui/material/useScrollTrigger';
+import { useNavigate } from 'react-router-dom';
 
+interface Props {
+  window?: () => Window;
+  children?: React.ReactElement<{ elevation?: number }>;
+}
 
-//PAS ENCORE INCLUSE DANS L'APP MAIS SOON TKT
+//Gérer l'UI du panier
+const CartBadge = styled(Badge)`
+  & .${badgeClasses.badge} {
+    top: -12px;
+    right: -6px;
+  }
+`;
 
-const navLinks = [
-  { label : "Home", path: "/" },
-  { label : "Matchs", path: "/matchs" },
-  { label : "Equipes", path: "/team" },
-  { label : "Groupes", path: "/stadiums" },
-  { label : "Billetterie", path: "/tickets" },
-];
+//Pour faire en sorte que la navbar reste "au dessus" du contenu
+function ElevationScroll(props: Props) { 
+  const { children, window } = props;
+  const trigger = useScrollTrigger({
+    disableHysteresis: true,
+    threshold: 0,
+    target: window ? window() : undefined,
+  });
 
-export default function Navbar() {
-  const [open, setOpen] = useState(false);
+  return children
+    ? React.cloneElement(children, {
+        elevation: trigger ? 4 : 0,
+      })
+    : null;
+}
+
+export default function Navbar(props: Props) {
+  const navigate = useNavigate();
 
   return (
-    <AppBar
-      position="fixed"
-      sx={{
-        background: "rgba(0, 0, 0, 0.6)",
-        backdropFilter: "blur(8px)",
-        boxShadow: "none",
-      }}
-    >
-      <Toolbar>
-        {}
-        <Typography
-          variant="h6"
-          component={Link}
-          to="/"
-          sx={{
-            flexGrow: 1,
-            textDecoration: "none",
-            color: "white",
-            fontWeight: "bold",
-          }}
-        >
-          Coupe du Monde 2026
-        </Typography>
+    <ElevationScroll {...props}>
+      <AppBar sx={{ backgroundColor: 'rgba(61, 72, 221, 0.8)' }}>
+        <Toolbar sx={{ gap: '25px' }}>
+          <Button
+            color="inherit"
+            variant="contained"
+            size="medium"
+            onClick={() => navigate('/')}
+            sx={{
+              backgroundColor: 'rgba(255, 255, 255, 0.2)',
+              '&:hover': {
+                backgroundColor: '#6FB8D8',
+              },
+            }}
+          >
+            Accueil
+          </Button>
 
-        {/* LIENS DESKTOP */}
-        <Box sx={{ display: { xs: "none", md: "flex" }, gap: 2 }}>
-          {navLinks.map((link) => (
-            <Button
-              key={link.path}
-              component={Link}
-              to={link.path}
-              color="inherit"
-              sx={{ textTransform: "none" }}
-            >
-              {link.label}
-            </Button>
-          ))}
-        </Box>
+          <Button 
+            color="inherit" 
+            variant="contained"
+            size="medium"
+            onClick={() => navigate('/matches')}
+            sx={{
+              backgroundColor: 'rgba(255, 255, 255, 0.2)',
+              '&:hover': {
+                backgroundColor: '#6FB8D8',
+              },
+            }}
+          >
+            Matchs
+          </Button>
 
-      </Toolbar>
-    </AppBar>
+          <Button
+            color="inherit"
+            variant="contained"
+            size="medium"
+            onClick={() => navigate('/teams')}
+            sx={{
+              backgroundColor: 'rgba(255, 255, 255, 0.2)',
+              '&:hover': {
+                backgroundColor: '#6FB8D8',
+              },
+            }}
+          >
+            Equipes
+          </Button>
+
+          <Button
+            color="inherit"
+            variant="contained"
+            size="medium"
+            onClick={() => navigate('/groups')}
+            sx={{
+              backgroundColor: 'rgba(255, 255, 255, 0.2)',
+              '&:hover': {
+                backgroundColor: '#6FB8D8',
+              },
+            }}
+          >
+            Groupes
+          </Button>
+
+          {/* On space pour avoir les icônes tout à droite, là où c'est plus logique */}
+          <Box sx={{ flexGrow: 1 }} />
+
+          {/* Attribut badgeContent pour afficher le contenu du panier !! (Utile pour voir les tickets qu'on va acheter !!!!!!!!) ex : badgeContent={2} => affiche le ptit 2*/}
+          <IconButton>
+            <ShoppingCartIcon fontSize="medium" />
+            <CartBadge color="primary" overlap="circular" /> 
+          </IconButton>
+
+          <IconButton>
+            <PersonIcon fontSize="medium" />
+            <CartBadge color="primary" overlap="circular" />
+          </IconButton>
+
+        </Toolbar>
+      </AppBar>
+    </ElevationScroll>
   );
 }

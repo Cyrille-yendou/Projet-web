@@ -1,10 +1,10 @@
 
 import React, { useEffect, useState } from "react";
 import { getMatches } from "../api/ticketing";
-import type { Match } from "../types/match";
+import type { Match } from "../types/Match";
 
 
-const MatchList: React.FC = () => {
+export const MatchList: React.FC = () => {
   const [matches, setMatches] = useState<Match[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);

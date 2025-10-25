@@ -1,5 +1,5 @@
 
-import type { Match } from "../types/match";
+import type { Match } from "../types/Match";
 import type { CartItem } from "../types/CartItem";
 
 const API_REST  = "https://worldcup2026.shrp.dev"; 

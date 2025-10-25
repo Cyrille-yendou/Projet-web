@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react';
 import { useParams, Link } from 'react-router-dom';
-import type { Match } from '../types/match';
+import type { Match } from '../types/Match';
 
 export default function MatchDetails() {
   const { id } = useParams<{ id: string }>();
