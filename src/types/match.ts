@@ -7,7 +7,7 @@ export type Match = {
   awayTeam: Team;
   stadium: Stadium;
   status: string;
-  stage: string;
+  //stage: string; // pas utilisé, comme les dates 
   date: Date;
   seatsAvailable: number; // nombre de places restantes
   priceMultiplier: number; // prix unitaire pour un ticket
