@@ -1,13 +1,14 @@
+import type { Stadium } from './stadium';
 import type { Team } from './team';
 
-export interface Match {
+export type Match = {
   id: string;
+  homeTeam: Team;
+  awayTeam: Team;
+  stadium: Stadium;
+  status: string;
+  stage: string;
   date: string;
-  country: string;
-  city: string;           
-  stadium: string;
-  teams: [Team, Team];
-  price: number;           // prix unitaire pour un ticket
-  seatsAvailable: number;  // nombre de places restantes
-  groupe: string;
+  seatsAvailable: number; // nombre de places restantes
+  priceMultiplier: number; // prix unitaire pour un ticket
 }

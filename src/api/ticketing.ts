@@ -10,7 +10,7 @@ export async function getMatches(): Promise<Match[]> {
   const res = await fetch(`${API_REST}/matches`);
   if (!res.ok) throw new Error("Erreur HTTP "+ res.status); // erreur lors du chargement des matchs
   const matches = await res.json();
-  console.log(Object.keys(matches).length + " objets dans la liste, recu depuis API");
+  console.log(Object.keys(matches.data).length + " objets dans la liste, recu depuis API");
   return matches;
 }
 

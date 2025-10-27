@@ -5,27 +5,25 @@ import type { Match } from "../types/match";
 
 
 export default function MatchList () {
+  console.log("CHARGEMENT MatchList");
   const [matches, setMatches] = useState<Match[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
   const [filters, setFilters] = useState([]);
-  const [filteredTeams, setFilteredTeams] = useState(["0", "2"]);
-  
-  const testMatches = [
-    {id: 1, teams: [{id: 0, name: "0"}, {id: 1, name: "1"}], date: Date(), price:3},
-    {id: 2, teams: [{id: 2, name: "2"}, {id: 3, name: "3"}], date: Date(), price:4},
-    {id: 3, teams: [{id: 2, name: "2"}, {id: 0, name: "0"}], date: Date(), price:5},
-    {id: 4, teams: [{id: 2, name: "3"}, {id: 0, name: "4"}], date: Date(), price:6}
-  ];
+  const [filteredTeams, setFilteredTeams] = useState(["Mexico"]);
 
-  const filteredMatches = testMatches.filter(match => (filteredTeams.includes( (match.teams[0].name)||(match.teams[1].name) )));
+  const filteredMatches = matches.filter(match => (filteredTeams.includes( (match.homeTeam.name)||(match.awayTeam.name) )));
 
   useEffect(() => {
     getMatches()
-      .then(data => setMatches(data))
+      .then(res => {
+        setMatches(res.data);
+        //console.log(res.data);
+    })
       .catch((err) => setError(err.message))
       .finally(() => setLoading(false));
+   
   }, []);
 
   if (loading) return <p>Chargement...</p>;
@@ -34,10 +32,12 @@ export default function MatchList () {
   return (
     <div>
       <h2>Liste des matchs</h2>
+
       <ul>
-        {filteredMatches.map((m) => (
+          <li><b>Equipe domicile -vs- Equipe visiteur — date — prix (€) </b></li>
+        {matches.map((m) => (
           <li key={m.id}>
-            {m.teams[0].name} vs {m.teams[1].name} — {m.date} — {m.price} €
+            {m.homeTeam.name} vs {m.awayTeam.name} — {m.date} — {m.priceMultiplier} €
           </li>
         ))}
       </ul>
