@@ -66,7 +66,7 @@ export default function Navbar(props: Props) {
             color="inherit" 
             variant="contained"
             size="medium"
-            onClick={() => navigate('/matches')}
+            onClick={() => navigate('/matchs')}
             sx={{
               backgroundColor: 'rgba(255, 255, 255, 0.2)',
               '&:hover': {

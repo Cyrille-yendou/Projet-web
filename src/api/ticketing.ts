@@ -1,14 +1,17 @@
 
-import type { Match } from "../types/Match";
+import type { Match } from "../types/match";
 import type { CartItem } from "../types/CartItem";
 
 const API_REST  = "https://worldcup2026.shrp.dev"; 
 
 // Récupérer tous les matchs
 export async function getMatches(): Promise<Match[]> {
+  console.log("Appel API");
   const res = await fetch(`${API_REST}/matches`);
-  if (!res.ok) throw new Error("Erreur lors du chargement des matchs");
-  return res.json();
+  if (!res.ok) throw new Error("Erreur HTTP "+ res.status); // erreur lors du chargement des matchs
+  const matches = await res.json();
+  console.log(Object.keys(matches).length + " objets dans la liste, recu depuis API");
+  return matches;
 }
 
 // Récupérer les détails d’un match

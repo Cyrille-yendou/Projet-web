@@ -1,8 +1,8 @@
 import { useEffect, useState } from "react";
 import { Routes, Route } from "react-router-dom";
 import { Box, Typography, Toolbar, CssBaseline } from "@mui/material";
-import MatchesList from "./MatchList";
-import MatchDetails from "./MatchDetails";
+import MatchList from "./matchList";
+import MatchDetails from "./matchDetails";
 import Navbar from "./Navbar";
 
 // Import des images de fond
@@ -124,8 +124,7 @@ export default function Home() {
         {/* Routes */}
         <Routes>
           <Route path="/" element={<HomePage />} />
-          <Route path="/matchs" element={<MatchesList />} />
-          <Route path="/match/:id" element={<MatchDetails />} />
+          <Route path="/matchs" element={<MatchList />} />
         </Routes>
       </Box>
     </Box>
