@@ -1,6 +1,6 @@
 
 import type { Match } from "../types/match";
-import type { CartItem } from "../types/CartItem";
+import type { CartItem } from "../types/cartItem";
 import type { Team } from "../types/team";
 import type { Group } from "../types/group";
 
@@ -12,7 +12,7 @@ export async function getMatches(): Promise<Match[]> {
   const res = await fetch(`${API_REST}/matches`);
   if (!res.ok) throw new Error("Erreur HTTP "+ res.status); // erreur lors du chargement des matchs
   const matches = await res.json();
-  console.log(Object.keys(matches.data).length + " objets dans la liste, recu depuis API");
+  //console.log(Object.keys(matches.data).length + " objets dans la liste, recu depuis API");
   return matches;
 }
 
@@ -29,7 +29,7 @@ export async function getTeams(): Promise<Team[]> {
   const res = await fetch(`${API_REST}/teams`);
   if (!res.ok) throw new Error("Erreur HTTP "+ res.status); // erreur lors du chargement des équipes
   const teams = await res.json();
-  console.log(Object.keys(teams.data).length + " objets dans la liste, recu depuis API");
+  //console.log(Object.keys(teams.data).length + " objets dans la liste, recu depuis API");
   return teams;
 }
 
@@ -39,7 +39,7 @@ export async function getGroups(): Promise<Group[]> {
   const res = await fetch(`${API_REST}/groups`);
   if (!res.ok) throw new Error("Erreur HTTP "+ res.status); // erreur lors du chargement des groupes
   const groups = await res.json();
-  console.log(Object.keys(groups.data).length + " objets dans la liste, recu depuis API");
+  //console.log(Object.keys(groups.data).length + " objets dans la liste, recu depuis API");
   return groups;
 }
 

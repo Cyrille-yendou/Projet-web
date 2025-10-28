@@ -1,4 +1,3 @@
-
 import { useEffect, useState } from "react";
 import { getGroups, getMatches, getTeams } from "../api/ticketing";
 import type { Match } from "../types/match";
@@ -7,35 +6,38 @@ import type { Group } from "../types/group";
 
 
 export default function MatchList () {
-  console.log("CHARGEMENT MatchList");
   const [matches, setMatches] = useState<Match[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
   // options des filtres (dates min et max de sélections, choix des équipes possibles, etc)
-  const [fd_Boundary, set_fd_Boundary] = useState([]);
-  const [ft_Options, set_ft_Options] = useState<Team[]>([]);
+  const [fd_Boundary, set_fd_Boundary] = useState<string[]>([]);
   const [fg_Options, set_fg_Options] = useState<Group[]>([]);
+  const [ft_Options, set_ft_Options] = useState<Team[]>([]);
   
   // filtres d'affichages
-  const [filterDates, setFilterDates] = useState();
-  const [filterTeams, setFilterTeams] = useState<string[]>([]);
+  const [filterDate, setFilterDate] = useState<string>("");
   const [filterGroups, setFilterGroups] = useState<string[]>([]);
+  const [filterTeams, setFilterTeams] = useState<string[]>([]);
 
   // filtre des matchs selon s'ils contiennent équipe(s) recherché(s) en filtre
   let filteredMatches = matches.filter(match => (filterTeams.length==0 || filterTeams.includes(match.homeTeam.name) || filterTeams.includes(match.awayTeam.name) ));
-  // filtre des groups selon s'ils contiennent groupe(s) recherché(s) en filtre
-  filteredMatches = filteredMatches.filter(match => (filterGroups.length==0 || filterGroups.includes(match.homeTeam.groupId.toString()))); 
+  // filtre des matchs selon s'ils contiennent groupe(s) recherché(s) en filtre
   // les 2 équipes sont du meme groupe, on a pas besoin de vérifier les 2
+  filteredMatches = filteredMatches.filter(match => (filterGroups.length==0 || filterGroups.includes(match.homeTeam.groupId.toString()))); 
+  // filtre des matchs selon s'ils contiennent date recherchée en filtre
+  filteredMatches = filteredMatches.filter(match => (filterDate.length==0 || filterDate.includes(match.date.toString().substring(0,10)))); 
 
 
   useEffect(() => {
+    const controller = new AbortController();
+    console.log("CHARGEMENT MatchList");
     getMatches()
       .then(res => {
         const cleanedMatches = res.data.filter((match: { status: string; }) => match.status == "scheduled"); // Que les matchs planifiés
         // en considérant les matchs triés par ordre chronologique :
-        const min: string = res.data[0].date.slice(0, res.data[0].date.indexOf("T")); // date du premier match pour selection filtre
-        const max: string = res.data[res.data.length-1].date.slice(0, res.data[0].date.indexOf("T")); // date du dernier match pour selection filtre
+        const min: string = cleanedMatches[0].date.substring(0,10);; // date du premier match pour selection filtre
+        const max: string = cleanedMatches[cleanedMatches.length-1].date.substring(0,10);; // date du dernier match pour selection filtre
         set_fd_Boundary([min, max])
 
         setMatches(cleanedMatches);
@@ -52,17 +54,18 @@ export default function MatchList () {
       .then(res => set_fg_Options(res.data))
       .catch((err) => setError(err.message))
       .finally(() => setLoading(false));
-   
+    
+    return () => {controller.abort();};
   }, []);
 
   if (loading) return <p>Chargement...</p>;
   if (error) return <p>Erreur : {error}</p>;
 
-  
-  const handleTeamFilter = (data: { target: { selectedOptions: any; }; }) => {
-    const teams = [...data.target.selectedOptions];
-    const teamsNames = teams.map(option => option.value);
-    setFilterTeams(teamsNames);
+
+  const handleDateFilter = (data) => {
+    const date = data.target.value;
+    console.log(date);
+    setFilterDate(date);
   }
   
   const handleGroupFilter = (data: { target: { selectedOptions: any; }; }) => {
@@ -72,6 +75,12 @@ export default function MatchList () {
     setFilterGroups(groupsId);
   }
 
+  const handleTeamFilter = (data: { target: { selectedOptions: any; }; }) => {
+    const teams = [...data.target.selectedOptions];
+    const teamsNames = teams.map(option => option.value);
+    setFilterTeams(teamsNames);
+  }
+  
 
   return (
     <div>
@@ -79,23 +88,23 @@ export default function MatchList () {
       
 
       <div>
-        <h4>Filtres :  {filteredMatches.length} match(s) correspondant(s))</h4> 
+        <h4>Filtres :  {filteredMatches.length} match(s) correspondant(s)</h4> 
 
         <label>Date : 
-        <input type="date" min={fd_Boundary[0]} max={fd_Boundary[1]} name="date"/> </label>
+        <input type="date" min={fd_Boundary[0]} max={fd_Boundary[1]} onChange={handleDateFilter}/> </label>
+          
+        <label>Groupe(s) : 
+        <select multiple onChange={handleGroupFilter}>
+          {fg_Options.map((g) => (
+            <option key={g.id} value={g.id}>Groupe {g.name}</option>
+          ))}
+        </select>
+        </label>
 
         <label>Équipe(s) : 
         <select multiple onChange={handleTeamFilter}>
           {ft_Options.map((t) => (
             <option key={t.id} value={t.name}>{t.flag} {t.name}</option>
-          ))}
-        </select>
-        </label>
-
-        <label>Groupe(s) : 
-        <select multiple onChange={handleGroupFilter}>
-          {fg_Options.map((g) => (
-            <option key={g.id} value={g.id}>Groupe {g.name}</option>
           ))}
         </select>
         </label>
@@ -107,7 +116,7 @@ export default function MatchList () {
           <li><b>Equipe domicile -vs- Equipe visiteur — date — stade </b></li>
           {filteredMatches.map((m) => (
             <li key={m.id}>
-              {m.homeTeam.code}{m.homeTeam.flag} vs {m.awayTeam.flag}{m.awayTeam.code} — {m.date} — {m.stadium.name}
+              {m.homeTeam.code}{m.homeTeam.flag} vs {m.awayTeam.flag}{m.awayTeam.code} — {m.date.toString().substring(0,10)} — {m.stadium.name}
             </li>
           ))}
       </ul>
