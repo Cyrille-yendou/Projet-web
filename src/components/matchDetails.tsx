@@ -1,42 +1,70 @@
-import { useEffect, useState } from 'react';
-import { useParams, Link } from 'react-router-dom';
-import type { Match } from '../types/match';
+import { useEffect, useState } from "react";
+import { Link, useParams } from "react-router";
+import { getAvailabilityByMatchId, getMatchById } from "../api/ticketing";
+import type { Match } from "../types/match";
+import type { Availability } from "../types/availability";
+import { dateFormatDDMMYYYY, timeFormatHHMM } from "./toolBox";
+import type { PlaceAvailability } from "../types/placeAvailability";
 
-export default function MatchDetails() {
-  const { id } = useParams<{ id: string }>();
-  const [match, setMatch] = useState<Match | null>(null);
+export default function MatchDetails () {
+  const {matchId} = useParams();
+  const [match, setMatch] = useState<Match>(Object);
+  const [availability, setavailability] = useState<Availability>(Object);
+
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
-    if (!id) return;
-
-    fetch(`https://worldcup2026.shrp.dev/${id}`)
-      .then(res => {
-        if (!res.ok) throw new Error('Match non trouvé');
-        return res.json();
-      })
-      .then((data: Match) => setMatch(data))
-      .catch(err => setError(err.message))
+    const controller = new AbortController();
+    //console.log("CHARGEMENT MatchDetails "+matchId);
+    
+    getMatchById(Number(matchId))
+      .then(res => setMatch(res.data))
+      .catch((err) => setError(err.message))
+    
+    getAvailabilityByMatchId(Number(matchId))
+      .then(res => setavailability(res.data))
+      .catch((err) => setError(err.message))
       .finally(() => setLoading(false));
-  }, [id]);
 
-  if (loading) return <p>Chargement du match...</p>;
+    return () => {controller.abort();};
+  }, []);
+  
+  if (loading) return <p>Chargement...</p>;
   if (error) return <p>Erreur : {error}</p>;
-  if (!match) return <p>Match introuvable</p>;
+
+
+  function visualizeAvailability(placeAv: PlaceAvailability, multiplier: number) {
+    if (placeAv.available) {
+      return (<div>
+        {placeAv.availableSeats} places disponibles {"  "} <br></br>
+        <button><Link to={"/placeholder"}>Acheter à {(placeAv.price * multiplier).toFixed(2)} €</Link></button>
+      </div>)
+    }
+    else return (<div> Aucune place disponible </div>)
+  }
 
   return (
     <div>
-      <h1>Détails du match</h1>
-      <p>
-        {match.teams[0].name} vs {match.teams[1].name}
-      </p>
-      <p>Ville : {match.city}</p>
-      <p>Stade : {match.stadium}</p>
-      <p>Date : {match.date}</p>
-      <p>Prix : {match.price} €</p>
-      <p>Places restantes : {match.seatsAvailable}</p>
-      <Link to="/">← Retour à la liste</Link>
+      <h2>Informations du Match n°{match.id}</h2> 
+      <h2>({match.homeTeam.confederation}) {match.homeTeam.name} {match.homeTeam.flag} vs {match.awayTeam.flag} {match.awayTeam.name} ({match.awayTeam.confederation})</h2>
+      
+      <span>
+        Le {dateFormatDDMMYYYY(match.date)} à {timeFormatHHMM(match.date)} <br></br>
+        au <i>{match.stadium.name}</i> situé à {match.stadium.city} ({match.stadium.country})
+      </span>
+
+      <br></br> 
+      <h4>— {match.availableSeats} Places disponibles —</h4>
+
+      <ul>
+        {Object.entries(availability.categories).map(([key, placeAv]) => (
+          <li key={key}>
+            {key} : {visualizeAvailability(placeAv, match.priceMultiplier)} <br></br>
+          </li>
+        ))}
+      </ul>
+
     </div>
   );
-}
+};

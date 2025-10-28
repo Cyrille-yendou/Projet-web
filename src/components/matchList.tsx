@@ -3,6 +3,8 @@ import { getGroups, getMatches, getTeams } from "../api/ticketing";
 import type { Match } from "../types/match";
 import type { Team } from "../types/team";
 import type { Group } from "../types/group";
+import { Link } from "react-router";
+import { dateFormatDDMMYYYY } from "./toolBox";
 
 
 export default function MatchList () {
@@ -31,7 +33,7 @@ export default function MatchList () {
 
   useEffect(() => {
     const controller = new AbortController();
-    console.log("CHARGEMENT MatchList");
+    //console.log("CHARGEMENT MatchList");
     getMatches()
       .then(res => {
         const cleanedMatches = res.data.filter((match: { status: string; }) => match.status == "scheduled"); // Que les matchs planifiés
@@ -43,12 +45,10 @@ export default function MatchList () {
         setMatches(cleanedMatches);
     })
       .catch((err) => setError(err.message))
-      .finally(() => setLoading(false));
     
     getTeams()
       .then(res => set_ft_Options(res.data))
       .catch((err) => setError(err.message))
-      .finally(() => setLoading(false));
       
     getGroups()
       .then(res => set_fg_Options(res.data))
@@ -62,16 +62,14 @@ export default function MatchList () {
   if (error) return <p>Erreur : {error}</p>;
 
 
-  const handleDateFilter = (data) => {
+  const handleDateFilter = (data: { target: { value: any; }; }) => {
     const date = data.target.value;
-    console.log(date);
     setFilterDate(date);
   }
   
   const handleGroupFilter = (data: { target: { selectedOptions: any; }; }) => {
     const groups = [...data.target.selectedOptions];
     const groupsId = groups.map(option => option.value);
-    //alert(groupsId);
     setFilterGroups(groupsId);
   }
 
@@ -84,8 +82,7 @@ export default function MatchList () {
 
   return (
     <div>
-      <h2>Liste des matchs </h2>
-      
+      <h2>Liste des matchs </h2>      
 
       <div>
         <h4>Filtres :  {filteredMatches.length} match(s) correspondant(s)</h4> 
@@ -116,7 +113,9 @@ export default function MatchList () {
           <li><b>Equipe domicile -vs- Equipe visiteur — date — stade </b></li>
           {filteredMatches.map((m) => (
             <li key={m.id}>
-              {m.homeTeam.code}{m.homeTeam.flag} vs {m.awayTeam.flag}{m.awayTeam.code} — {m.date.toString().substring(0,10)} — {m.stadium.name}
+              <Link to={"/matches/"+m.id} state={Number(m.id)}>
+                {m.id} {m.homeTeam.code}{m.homeTeam.flag} vs {m.awayTeam.flag}{m.awayTeam.code} — {dateFormatDDMMYYYY(m.date)} — {m.stadium.name}
+              </Link>
             </li>
           ))}
       </ul>

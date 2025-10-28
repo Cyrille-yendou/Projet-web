@@ -123,8 +123,9 @@ export default function Home() {
       >
         {/* Routes */}
         <Routes>
-          <Route path="/" element={<HomePage />} />
-          <Route path="/matchs" element={<MatchList />} />
+          <Route path="/" index element={<HomePage/>} />
+          <Route path="matches" element={<MatchList/>} />
+          <Route path="matches/:matchId" element={<MatchDetails/>} />
         </Routes>
       </Box>
     </Box>

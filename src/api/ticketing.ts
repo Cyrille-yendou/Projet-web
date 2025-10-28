@@ -3,6 +3,7 @@ import type { Match } from "../types/match";
 import type { CartItem } from "../types/cartItem";
 import type { Team } from "../types/team";
 import type { Group } from "../types/group";
+import type { Availability } from "../types/availability";
 
 const API_REST  = "https://worldcup2026.shrp.dev"; 
 
@@ -18,9 +19,20 @@ export async function getMatches(): Promise<Match[]> {
 
 // Récupérer les détails d’un match
 export async function getMatchById(id: number): Promise<Match> {
+  console.log("Appel API - getMatchById() "+id);
   const res = await fetch(`${API_REST}/matches/${id}`);
-  if (!res.ok) throw new Error("Match introuvable");
-  return res.json();
+  if (!res.ok) throw new Error("Erreur HTTP "+ res.status);
+  const match = await res.json();
+  return match;
+}
+
+// Récupérer les disponibilités d’un match
+export async function getAvailabilityByMatchId(id: number): Promise<Availability> {
+  console.log("Appel API - getAvailabilityByMatchId() "+id);
+  const res = await fetch(`${API_REST}/matches/${id}/availability`);
+  if (!res.ok) throw new Error("Erreur HTTP "+ res.status);
+  const availability = await res.json();
+  return availability;
 }
 
 // Récupérer toutes les équipes
