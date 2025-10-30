@@ -1,15 +1,12 @@
-import * as React from 'react';
-import AppBar from '@mui/material/AppBar';
-import Toolbar from '@mui/material/Toolbar';
-import Button from '@mui/material/Button';
-import IconButton from '@mui/material/IconButton';
-import Box from '@mui/material/Box';
-import { styled } from '@mui/material/styles';
-import Badge, { badgeClasses } from '@mui/material/Badge';
-import ShoppingCartIcon from '@mui/icons-material/ShoppingCartOutlined';
-import PersonIcon from '@mui/icons-material/Person';
-import useScrollTrigger from '@mui/material/useScrollTrigger';
+import { cloneElement, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
+
+import { AppBar, Backdrop, Badge, badgeClasses, Box, Button, Fade, IconButton, Modal, styled, Toolbar, useScrollTrigger } from '@mui/material';
+import PersonIcon from '@mui/icons-material/Person';
+import ShoppingCartIcon from '@mui/icons-material/ShoppingCartOutlined';
+
+import Authentification from './authentication';
+import type { User } from '../types/user';
 
 interface Props {
   window?: () => Window;
@@ -34,7 +31,7 @@ function ElevationScroll(props: Props) {
   });
 
   return children
-    ? React.cloneElement(children, {
+    ? cloneElement(children, {
         elevation: trigger ? 4 : 0,
       })
     : null;
@@ -42,6 +39,9 @@ function ElevationScroll(props: Props) {
 
 export default function Navbar(props: Props) {
   const navigate = useNavigate();
+  // pour le modal de l'authentification
+  const [modal, setModal] = useState(false);
+  const handleModal = () => {setModal(!modal)};
 
   return (
     <ElevationScroll {...props}>
@@ -116,10 +116,28 @@ export default function Navbar(props: Props) {
             <CartBadge color="primary" overlap="circular" /> 
           </IconButton>
 
-          <IconButton>
+          <IconButton onClick={handleModal}>
             <PersonIcon fontSize="medium" />
             <CartBadge color="primary" overlap="circular" />
           </IconButton>
+
+          <Modal open={modal} onClose={handleModal} 
+            aria-labelledby="transition-modal-title"
+            aria-describedby="transition-modal-description"
+            closeAfterTransition
+            slots={{ backdrop: Backdrop }}
+            slotProps={{
+              backdrop: {
+                timeout: 500,
+              },
+            }}
+          >
+            <Fade in={modal}>
+              <div>                 
+                <Authentification></Authentification> 
+              </div>
+            </Fade>
+          </Modal>
 
         </Toolbar>
       </AppBar>
