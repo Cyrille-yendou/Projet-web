@@ -22,7 +22,13 @@ export default function Authentification () {
     // info recup de la connexion, jsp quoi mettre
     const [hasAttemptedConnection, setHasAttemptedConnection] = useState<boolean>(false);
     const [isConnected, setIsConnected] = useState<boolean>(false);
-    const [user, setUser] = useState<User>(Object);
+    const [user, setUser] = useState<User>({ 
+            firstname: "", 
+            lastname: "", 
+            email: "", 
+            password: "", 
+            birthDate: new Date(), 
+        });
 
 
     async function signingIn(data) {
@@ -51,19 +57,18 @@ export default function Authentification () {
 
     }
 
-    /*
+    
     if (isConnected) 
         return (
             <Box sx={style}>
-                <h2>Ravi de vous voir, {user.firstname} {user.lastname} !</h2>
-                <i>Née le {user.birthDate.toString()}</i>
+                <h2>Ravi de vous voir,<br></br> {user.firstname} {user.lastname} !</h2>
+                <i>Née le {user.birthDate.toString()}</i> <br></br><br></br>
                 <span>
-                    <label>Email : <input type="email" value={user.email}/> </label> <br></br>
-                    <label>Mot de passe : <input type="password" value={user.password}/> </label> 
+                    <label>Email : <input type="text" value={user.email||""} readOnly/> </label> <br></br>
                 </span>
             </Box>
         );
-    else {*/
+    else {
         return (
             <Box sx={style}>
                 <h2>Connexion :</h2>
@@ -86,5 +91,5 @@ export default function Authentification () {
                 </form>
             </Box>
     );
-    //};
+    };
 }
