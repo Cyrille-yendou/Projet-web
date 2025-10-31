@@ -113,7 +113,7 @@ export default function Authentification({ user, setUser, isConnected, setIsConn
                     <label>Mot de passe : <input required type="password" name="password" /> </label> <br></br> <br></br>
                     <label>Anniversaire : <input required type="date" name="birthDate" /> </label> <br></br>
 
-                    <button>Se connecter</button>
+                    <button>S'inscrire</button>
                 </form>
             </Box>
         );
