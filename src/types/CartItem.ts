@@ -1,5 +1,9 @@
 
 export type CartItem = {
-    matchId: string;
-    quantity: number;
+  id: number;
+  matchId: number;
+  category: string;
+  quantity: number;
+  price: number;
+  
 };
