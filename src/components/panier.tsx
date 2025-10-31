@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { getPendingTickets, removeFromCart, payPending } from "../api/ticketing";
+import { getPendingTickets, removeFromCart, payPending } from "../serviceAPI/dataRetriever";
 import type { CartItem } from "../types/CartItem";
 import { Link } from "react-router";
 

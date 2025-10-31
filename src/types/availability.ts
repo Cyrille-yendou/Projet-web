@@ -1,7 +1,7 @@
 import type { PlaceAvailability } from "./placeAvailability";
 
 export type Availability = {
-    data(data: any): void | PromiseLike<void>;
+    //data(data: any): void | PromiseLike<void>;
     matchId: number;
     totalAvailableSeats: number;
     categories: {

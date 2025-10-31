@@ -10,43 +10,45 @@ export default function MatchDetails() {
   const { matchId } = useParams();
   const navigate = useNavigate();
 
-  const [match, setMatch] = useState<Match>(Object);
-  const [availability, setavailability] = useState<Availability>(Object);
+  // 1. Correction : Initialisation à null et types ajustés
+  const [match, setMatch] = useState<Match | null>(null);
+  const [availability, setAvailability] = useState<Availability | null>(null);
+  
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
   // Quantités par catégorie
   const [quantities, setQuantities] = useState<Record<string, number>>({});
-  // Récupération du token JWT depuis localStorage
-  const token = localStorage.getItem("jwtToken");
-  if (!token) {
-    alert("Vous devez être connecté pour acheter des tickets !");
-  }
+  
 
   useEffect(() => {
     const controller = new AbortController();
 
     getMatchById(Number(matchId))
-      .then(res => setMatch(res.data.apply))
+      .then(res => setMatch(res.data))
       .catch(err => setError(err.message));
 
-     getAvailabilityByMatchId(Number(matchId))
-      .then(res => setavailability(res.data.apply))
+    getAvailabilityByMatchId(Number(matchId))
+      // J'ai corrigé setavailability en setAvailability
+      .then(res => setAvailability(res.data))
       .catch((err) => setError(err.message))
       .finally(() => setLoading(false));
 
     return () => controller.abort();
-  }, []);
+  }, [matchId]); // Ajout de matchId dans les dépendances pour une meilleure pratique
 
   if (loading) return <p>Chargement...</p>;
   if (error) return <p>Erreur : {error}</p>;
 
-  async function handleBuy(category: string, placeAv: PlaceAvailability) {
-     if (!token) {
-      alert("Vous devez être connecté pour acheter des tickets !");
-      return;
-    }
+  // 3. Nouvelle Vérification Cruciale : S'assurer que les données sont chargées
+  if (!match || !availability) {
+    // Cela gère le cas où loading est false, mais les données sont toujours null (ex: l'API n'a rien retourné sans erreur formelle)
+    return <p>Impossible d'afficher les détails du match : données manquantes.</p>;
+  }
 
+  async function handleBuy(category: string, placeAv: PlaceAvailability) {
+    
+    // Le 'match' est garanti non-null ici grâce à la vérification ci-dessus
     const quantity = quantities[category];
     if (quantity < 1 || quantity > 6) {
       alert("⚠️ Vous pouvez acheter entre 1 et 6 tickets maximum.");
@@ -54,7 +56,7 @@ export default function MatchDetails() {
     }
 
     try {
-      await addToCart(match.id, placeAv.category, quantity, token);
+      await addToCart(match.id, placeAv.category, quantity);
       alert(`🎟️ ${quantity} ticket(s) ajouté(s) au panier avec succès !`);
       navigate("/panier");
     } catch (err) {
@@ -62,6 +64,7 @@ export default function MatchDetails() {
     }
   }
 
+  // Le rendu principal est maintenant sécurisé
   return (
     <div>
       <h2>Informations du Match n°{match.id}</h2>

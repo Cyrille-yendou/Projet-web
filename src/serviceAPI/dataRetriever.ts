@@ -4,7 +4,7 @@ import type { CartItem } from "../types/CartItem";
 import type { Team } from "../types/team";
 import type { Group } from "../types/group";
 import type { Availability } from "../types/availability";
-
+import type { User } from "../types/user";
 
 const API_REST  = "https://worldcup2026.shrp.dev"; 
 
@@ -58,12 +58,12 @@ export async function getGroups(): Promise<Group[]> {
 /* ----------------------- PANIER / CART ----------------------- */
 
 // Ajouter des tickets dans le panier
-export async function addToCart(matchId: number, category: string, quantity: number, token: string) {
-  const res = await fetch(`${API_REST}/panier`, {
+export async function addToCart(matchId: number, category: string, quantity: number) {
+  const res = await fetch(`${API_REST}/tickets`, {
     method: "POST",
+    credentials: "include", // <- important, envoie les cookies d’authentification
     headers: { 
       "Content-Type": "application/json",
-      "Authorization": `Bearer ${token}`
     },
     body: JSON.stringify({ matchId, category, quantity }),
   });
@@ -73,39 +73,42 @@ export async function addToCart(matchId: number, category: string, quantity: num
 
 // Supprimer un ticket du panier
 export async function removeFromCart(ticketId: number) {
-  const res = await fetch(`${API_REST}/${ticketId}`, { method: "DELETE" });
+  const res = await fetch(`${API_REST}/tickets/${ticketId}`, {
+    method: "DELETE",
+    headers: {   "Content-Type": "application/json" }
+  });
   if (!res.ok) throw new Error("Erreur lors de la suppression du ticket");
   return res.json();
 }
 
 // Voir les tickets en attente (dans le panier)
 export async function getPendingTickets() {
-  const res = await fetch(`${API_REST}/pending`);
+  const res = await fetch(`${API_REST}/pending`, {
+    headers: {    "Content-Type": "application/json"}
+  });
   if (!res.ok) throw new Error("Erreur lors de la récupération du panier");
   return res.json();
 }
 
 // Payer les tickets du panier
 export async function payPending() {
-  const res = await fetch(`${API_REST}/pay-pending`, { method: "POST" });
+  const res = await fetch(`${API_REST}/pay-pending`, {
+    method: "POST",
+    headers: {   "Content-Type": "application/json" }
+  });
   if (!res.ok) throw new Error("Erreur lors du paiement du panier");
-  return res.json();
-}
-
-// Voir les tickets achetés
-export async function getPurchasedTickets() {
-  const res = await fetch(`${API_REST}/`);
-  if (!res.ok) throw new Error("Erreur lors de la récupération des tickets achetés");
   return res.json();
 }
 
 // Valider (utiliser) un ticket acheté
 export async function validateTicket(ticketId: number) {
-  const res = await fetch(`${API_REST}/${ticketId}/validate`, { method: "POST" });
+  const res = await fetch(`${API_REST}/tickets/${ticketId}/validate`, {
+    method: "POST",
+    headers: {   "Content-Type": "application/json" }
+  });
   if (!res.ok) throw new Error("Erreur lors de la validation du ticket");
   return res.json();
 }
-
 // Passer une commande (simulée)
 export async function createOrder(items: CartItem[]) {
   const res = await fetch(`${API_REST}/orders`, {
@@ -118,3 +121,18 @@ export async function createOrder(items: CartItem[]) {
 }
 
 
+// Récupération des infos du compte connecté
+export async function signInGET(): Promise<User> {
+  const res = await fetch(`${API_REST}/auth/me`, {
+    method: "GET",
+    credentials: "include",
+    headers: {
+      "Content-Type": "application/json",
+    },
+  });
+
+  if (!res.ok) throw new Error("Erreur HTTP " + res.status);
+
+  const data = await res.json();
+  return data.data as User;
+}
