@@ -14,6 +14,8 @@ const IMAGES = [football1, football2, football3];
 const ROTATION_INTERVAL = 4000; // 4 secondes
 
 function HomePage() {
+  
+
   return (
     <>
       <Typography

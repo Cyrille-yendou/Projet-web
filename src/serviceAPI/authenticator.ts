@@ -34,6 +34,8 @@ export async function signInGET(): Promise<User> {
     if (!res.ok) throw new Error("Erreur HTTP "+ res.status); // erreur lors du chargement
     const data = await res.json();
     console.log(data);
+    
+    //await new Promise(resolve => setTimeout(resolve, 5000)); test chargement
     return data.data;
 }
 
@@ -41,7 +43,7 @@ export async function signInGET(): Promise<User> {
 
 // Création de compte
 export async function signUp(user: User): Promise<boolean> {
-  console.log("Appel API - signUp() "+user.password);/*
+  console.log("Appel API - signUp() "+user.password);
   const res = await fetch(`${API_REST}/auth/signup`, {
     method: "POST",
     credentials: "include",
@@ -49,10 +51,15 @@ export async function signUp(user: User): Promise<boolean> {
         "Content-Type": "application/json",
         Accept: "application/json"
     },
-    body: JSON.stringify({firstname: firstname, lastname: lastname, email: email, password: password, birthDate: birthDate})
+    body: JSON.stringify({
+        firstname: user.firstname, 
+        lastname: user.lastname, 
+        email: user.email, 
+        password: user.password, 
+        birthDate: user.birthDate
+    })
   });
   if (!res.ok) throw new Error("Erreur HTTP "+ res.status); // erreur lors du chargement
   const data = await res.json();
-  return data.success;*/
-  return true;
+  return data.success;
 }

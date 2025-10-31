@@ -29,34 +29,44 @@ export default function Authentification () {
             password: "", 
             birthDate: new Date(), 
         });
+    
+    const [loading, setLoading] = useState<boolean>(true);
+    const [error, setError] = useState<string | null>(null);
 
 
     async function signingIn(data) {
         setHasAttemptedConnection(true);
-        // tente de se connecter
-        const isLogged = await signInPOST(data.get("email"), data.get("password"));
-        setIsConnected(isLogged);
-        // si connecté :
-        if (isLogged) {
-            const profil = await signInGET();
-            setUser(profil); // récupère le profil
-        }
+        signInPOST(data.get("email"), data.get("password"))
+            .then(async res => {
+                setIsConnected(res);
+                if (res) {
+                    const profil = await signInGET();
+                    setUser(profil); // récupère le profil
+                }
+            })
+            .catch((err) => setError(err.message))
+            .finally(() => setLoading(false));
+
     }
 
     async function signingUp(data) {
         const buffer: User = { 
             firstname: data.get("firstname"), 
             lastname: data.get("lastname"), 
-            email: data.get("firstname"), 
-            password: data.get("firstname"), 
-            birthDate: data.get("firstname"), 
+            email: data.get("email"), 
+            password: data.get("password"), 
+            birthDate: data.get("birthDate"), 
         }
-        const isLogged = await signUp(buffer);
-        setIsConnected(isLogged);
-        if (isLogged) setUser(buffer); // récupère le profil
-
+        signUp(buffer)
+            .then(async res => {
+                setIsConnected(res);
+                if (res) setUser(buffer); // récupère le profil
+            })
+            .catch((err) => setError(err.message))
+            .finally(() => setLoading(false));
     }
 
+    if (hasAttemptedConnection && loading) return <Box sx={style}><p>Chargement...</p></Box>;
     
     if (isConnected) 
         return (
@@ -71,6 +81,7 @@ export default function Authentification () {
     else {
         return (
             <Box sx={style}>
+                {error? <p style={{color: "red"}}>{error}</p> : null}
                 <h2>Connexion :</h2>
                 <form action={signingIn}>
                     <label>Email : <input required type="email" name="email"/> </label> <br></br>
