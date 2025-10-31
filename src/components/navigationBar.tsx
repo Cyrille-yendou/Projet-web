@@ -1,4 +1,4 @@
-import { cloneElement, useState } from 'react';
+import { cloneElement, useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 
 import { AppBar, Backdrop, Badge, badgeClasses, Box, Button, Fade, IconButton, Modal, styled, Toolbar, useScrollTrigger } from '@mui/material';
@@ -7,6 +7,8 @@ import ShoppingCartIcon from '@mui/icons-material/ShoppingCartOutlined';
 
 import Authentification from './authentication';
 import type { User } from '../types/user';
+import { signInGET } from '../serviceAPI/authenticator';
+
 
 interface Props {
   window?: () => Window;
@@ -37,11 +39,32 @@ function ElevationScroll(props: Props) {
     : null;
 }
 
-export default function Navbar(props: Props) {
+export default function NavigationBar(props: Props) {
   const navigate = useNavigate();
+  
   // pour le modal de l'authentification
   const [modal, setModal] = useState(false);
   const handleModal = () => {setModal(!modal)};
+
+  const [isConnected, setIsConnected] = useState<boolean>(false);
+  const [user, setUser] = useState<User>({ 
+    firstname: "", 
+    lastname: "", 
+    email: "", 
+    password: "", 
+    birthDate: new Date(), 
+  });
+
+  useEffect(() => {
+    if (!isConnected) { // si on est pas déjà co avec des variables (=refresh page)
+        signInGET()
+            .then(res => { // voit si peux recup les infos par cookie
+                setIsConnected((res != null)); // (si recup qlque chose, isConnected=true, sinon =false)
+                if (res != null) setUser(res); // recup dans variables les infos utilisateurs
+            })
+    }
+  }, []);
+  
 
   return (
     <ElevationScroll {...props}>
@@ -134,7 +157,7 @@ export default function Navbar(props: Props) {
           >
             <Fade in={modal}>
               <div>                 
-                <Authentification></Authentification> 
+                <Authentification user={user} setUser={setUser} isConnected={isConnected} setIsConnected={setIsConnected}></Authentification> 
               </div>
             </Fade>
           </Modal>

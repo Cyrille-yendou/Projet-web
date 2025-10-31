@@ -17,7 +17,7 @@ export async function signInPOST(email: string, password: string): Promise<boole
     });
     if (!res.ok) throw new Error("Erreur HTTP "+ res.status); // erreur lors du chargement
     const data = await res.json();
-    console.log(data);
+    //console.log(data);
     return data.success;
 }
 
@@ -31,15 +31,12 @@ export async function signInGET(): Promise<User> {
             "Content-Type": "application/json",
         }
     });
-    if (!res.ok) throw new Error("Erreur HTTP "+ res.status); // erreur lors du chargement
+    //if (!res.ok) throw new Error("Erreur HTTP "+ res.status); // erreur lors du chargement
     const data = await res.json();
-    console.log(data);
-    
+    //console.log(data);
     //await new Promise(resolve => setTimeout(resolve, 5000)); test chargement
     return data.data;
 }
-
-
 
 // Création de compte
 export async function signUp(user: User): Promise<boolean> {
@@ -62,4 +59,20 @@ export async function signUp(user: User): Promise<boolean> {
   if (!res.ok) throw new Error("Erreur HTTP "+ res.status); // erreur lors du chargement
   const data = await res.json();
   return data.success;
+}
+
+
+// Déconnexion au compte
+export async function signOut(): Promise<boolean> {
+    console.log("Appel API - signOut() ");
+    const res = await fetch(`${API_REST}/auth/signout`, {
+        method: "POST",
+        credentials: "include",
+        headers: {
+            "Content-Type": "application/json",
+        }
+    });
+    if (!res.ok) throw new Error("Erreur HTTP "+ res.status); // erreur lors du chargement
+    const data = await res.json();
+    return data.success;
 }

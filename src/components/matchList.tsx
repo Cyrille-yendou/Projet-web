@@ -61,7 +61,6 @@ export default function MatchList () {
   if (loading) return <p>Chargement...</p>;
   if (error) return <p>Erreur : {error}</p>;
 
-
   const handleDateFilter = (data: { target: { value: any; }; }) => {
     const date = data.target.value;
     setFilterDate(date);

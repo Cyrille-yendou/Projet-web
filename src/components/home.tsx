@@ -3,7 +3,7 @@ import { Routes, Route } from "react-router-dom";
 import { Box, Typography, Toolbar, CssBaseline } from "@mui/material";
 import MatchList from "./matchList";
 import MatchDetails from "./matchDetails";
-import Navbar from "./Navbar";
+import NavigationBar from "./navigationBar";
 
 // Import des images de fond
 import football1 from "../assets/images/football1.jpg";
@@ -14,8 +14,6 @@ const IMAGES = [football1, football2, football3];
 const ROTATION_INTERVAL = 4000; // 4 secondes
 
 function HomePage() {
-  
-
   return (
     <>
       <Typography
@@ -69,7 +67,7 @@ export default function Home() {
       <CssBaseline />
       
       {/* Navbar fixe */}
-      <Navbar />
+      <NavigationBar/>
       
       {/* Espace pour la navbar */}
       <Toolbar />
