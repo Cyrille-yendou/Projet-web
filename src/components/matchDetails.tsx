@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 import { useNavigate, useParams } from "react-router";
-import { getAvailabilityByMatchId, getMatchById, addToCart } from "../api/ticketing";
+import { getAvailabilityByMatchId, getMatchById, addToCart} from "../serviceAPI/dataRetriever";
 import type { Match } from "../types/match";
 import type { Availability } from "../types/availability";
 import { dateFormatDDMMYYYY, timeFormatHHMM } from "./toolBox";
@@ -27,11 +27,11 @@ export default function MatchDetails() {
     const controller = new AbortController();
 
     getMatchById(Number(matchId))
-      .then(res => setMatch(res.data))
+      .then(res => setMatch(res.data.apply))
       .catch(err => setError(err.message));
 
      getAvailabilityByMatchId(Number(matchId))
-      .then(res => setavailability(res.data))
+      .then(res => setavailability(res.data.apply))
       .catch((err) => setError(err.message))
       .finally(() => setLoading(false));
 

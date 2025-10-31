@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { getGroups, getMatches, getTeams } from "../api/ticketing";
+import { getGroups, getMatches, getTeams } from "../serviceAPI/dataRetriever";
 import type { Match } from "../types/match";
 import type { Team } from "../types/team";
 import type { Group } from "../types/group";
@@ -61,7 +61,6 @@ export default function MatchList () {
   if (loading) return <p>Chargement...</p>;
   if (error) return <p>Erreur : {error}</p>;
 
-
   const handleDateFilter = (data: { target: { value: any; }; }) => {
     const date = data.target.value;
     setFilterDate(date);
@@ -110,11 +109,11 @@ export default function MatchList () {
       <br></br>
 
       <ul>
-          <li><b>Equipe domicile -vs- Equipe visiteur — date — stade </b></li>
+          <li><b>Numéro de match : Equipe domicile -vs- Equipe visiteur — date — stade </b></li>
           {filteredMatches.map((m) => (
             <li key={m.id}>
-              <Link to={"/matches/"+m.id} state={Number(m.id)}>
-                {m.id} {m.homeTeam.code}{m.homeTeam.flag} vs {m.awayTeam.flag}{m.awayTeam.code} — {dateFormatDDMMYYYY(m.date)} — {m.stadium.name}
+              <Link to={"/matches/"+m.id}>
+                n°{m.id}: {m.homeTeam.code}{m.homeTeam.flag} vs {m.awayTeam.flag}{m.awayTeam.code} — {dateFormatDDMMYYYY(m.date)} — {m.stadium.name}
               </Link>
             </li>
           ))}

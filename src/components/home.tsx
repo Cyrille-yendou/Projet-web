@@ -3,7 +3,7 @@ import { Routes, Route } from "react-router-dom";
 import { Box, Typography, Toolbar, CssBaseline } from "@mui/material";
 import MatchList from "./matchList";
 import MatchDetails from "./matchDetails";
-import Navbar from "./Navbar";
+import NavigationBar from "./navigationBar";
 
 // Import des images de fond
 import football1 from "../assets/images/football1.jpg";
@@ -67,7 +67,7 @@ export default function Home() {
       <CssBaseline />
       
       {/* Navbar fixe */}
-      <Navbar />
+      <NavigationBar/>
       
       {/* Espace pour la navbar */}
       <Toolbar />
