@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 import { useNavigate, useParams } from "react-router";
-import { getAvailabilityByMatchId, getMatchById, addToCart, getTicket} from "../serviceAPI/dataRetriever";
+import { getAvailabilityByMatchId, getMatchById, addTicket, getTicket} from "../serviceAPI/dataRetriever";
 import type { Match } from "../types/match";
 import type { Availability } from "../types/availability";
 import { dateFormatDDMMYYYY, timeFormatHHMM } from "./toolBox";
@@ -29,8 +29,6 @@ export default function MatchDetails() {
       return;
     }
     
-    // Assurez-vous que la quantité est un entier et est dans la plage [1, 6]
-    // Math.max(1, ...) garantit qu'on ne descend pas en dessous du minimum d'achat
     const safeQuantity = Math.max(1, Math.min(6, Math.floor(value))); 
 
     setQuantities(prevQuantities => ({
@@ -94,7 +92,7 @@ export default function MatchDetails() {
 
     try {
       
-      const res = await addToCart( matchId, category, quantity);
+      const res = await addTicket( matchId, category, quantity);
       alert(`🎟️ ${quantity} ticket(s) ajouté(s) au panier avec succès !`);
       console.log("✅ Billets ajoutés au panier avec succès !");
       console.log("Réponse du serveur :", res);
@@ -105,7 +103,7 @@ export default function MatchDetails() {
         alert("❌ Erreur lors de l’ajout au panier. Cause inconnue.");
         console.error("Erreur inattendue attrapée:", err);
       }
-       navigate("/tickets/pending");
+       navigate("/tickets");
     }
 }
 

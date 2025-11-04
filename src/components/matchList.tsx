@@ -3,7 +3,7 @@ import { getGroups, getMatches, getTeams } from "../serviceAPI/dataRetriever";
 import type { Match } from "../types/match";
 import type { Team } from "../types/team";
 import type { Group } from "../types/group";
-import { Link } from "react-router";
+import { Link } from "react-router-dom";
 import { dateFormatDDMMYYYY } from "./toolBox";
 
 
@@ -78,7 +78,6 @@ export default function MatchList () {
     setFilterTeams(teamsNames);
   }
   
-
   return (
     <div>
       <h2>Liste des matchs </h2>      

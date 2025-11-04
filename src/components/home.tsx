@@ -5,6 +5,7 @@ import MatchList from "./matchList";
 import MatchDetails from "./matchDetails";
 import NavigationBar from "./navigationBar";
 import Panier from "./panier";
+import TicketsList from "./tickets"
 
 // Import des images de fond
 import football1 from "../assets/images/football1.jpg";
@@ -129,6 +130,7 @@ export default function Home() {
           <Route path="matches" element={<MatchList/>} />
           <Route path="matches/:matchId" element={<MatchDetails/>} />
           <Route path="/tickets/pending" element={<Panier/>} /> 
+          <Route path="/tickets" element={<TicketsList/>} /> 
         </Routes>
       </Box>
     </Box>

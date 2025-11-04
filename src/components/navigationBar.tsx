@@ -1,5 +1,5 @@
 import { cloneElement, useEffect, useState } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, Link } from 'react-router-dom';
 
 import { AppBar, Backdrop, Badge, badgeClasses, Box, Button, Fade, IconButton, Modal, styled, Toolbar, useScrollTrigger } from '@mui/material';
 import PersonIcon from '@mui/icons-material/Person';
@@ -8,6 +8,7 @@ import ShoppingCartIcon from '@mui/icons-material/ShoppingCartOutlined';
 import Authentification from './authentication';
 import type { User } from '../types/user';
 import { signInGET } from '../serviceAPI/authenticator';
+
 
 
 interface Props {
@@ -54,6 +55,10 @@ export default function NavigationBar(props: Props) {
     password: "", 
     birthDate: new Date(), 
   });
+
+  const handleClick = () => {
+    navigate("/tickets/pending");
+  };
 
   useEffect(() => {
     if (!isConnected) { // si on est pas déjà co avec des variables (=refresh page)
@@ -130,13 +135,29 @@ export default function NavigationBar(props: Props) {
             Groupes
           </Button>
 
+          <Button
+            color="inherit"
+            variant="contained"
+            size="medium"
+            onClick={() => navigate('/tickets')}
+            sx={{
+              backgroundColor: 'rgba(255, 255, 255, 0.2)',
+              '&:hover': {
+                backgroundColor: '#6FB8D8',
+              },
+            }}
+          >
+            Tickets
+          </Button>
+
           {/* On space pour avoir les icônes tout à droite, là où c'est plus logique */}
           <Box sx={{ flexGrow: 1 }} />
 
           {/* Attribut badgeContent pour afficher le contenu du panier !! (Utile pour voir les tickets qu'on va acheter !!!!!!!!) ex : badgeContent={2} => affiche le ptit 2*/}
-          <IconButton>
+          <IconButton onClick={handleClick}>
             <ShoppingCartIcon fontSize="medium" />
             <CartBadge color="primary" overlap="circular" /> 
+            <Link to={'/tickets/pending'}></Link>
           </IconButton>
 
           <IconButton onClick={handleModal}>

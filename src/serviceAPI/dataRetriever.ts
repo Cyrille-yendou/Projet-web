@@ -1,6 +1,6 @@
 
 import type { Match } from "../types/match";
-import type { CartItem } from "../types/CartItem";
+import type { Ticket } from "../types/ticket";
 import type { Team } from "../types/team";
 import type { Group } from "../types/group";
 import type { Availability } from "../types/availability";
@@ -55,10 +55,10 @@ export async function getGroups(): Promise<Group[]> {
   //console.log(Object.keys(groups.data).length + " objets dans la liste, recu depuis API");
   return groups;
 }
-/* ----------------------- PANIER / CART ----------------------- */
+/* ----------------------- PANIER ----------------------- */
 
 // Ajouter des tickets dans le panier
-export async function addToCart(matchId: number, category: string, quantity: number) {
+export async function addTicket(matchId: number, category: string, quantity: number) {
   const res = await fetch(`${API_REST}/tickets`, {
     method: "POST",
     credentials: "include", 
@@ -69,7 +69,7 @@ export async function addToCart(matchId: number, category: string, quantity: num
   if (!res.ok) {
     const errorBody = await res.json();
     if (errorBody && errorBody.message) {
-      throw new Error(errorBody.message); // Lancer le message précis du serveur
+      throw new Error(errorBody.message); 
     }
     throw new Error("Erreur lors de l’ajout au panier");
   }
@@ -77,11 +77,12 @@ export async function addToCart(matchId: number, category: string, quantity: num
 }
 
 // Supprimer un ticket du panier
-export async function removeFromCart(ticketId: string) {
-  const res = await fetch(`${API_REST}/tickets/${ticketId}`, {
+export async function removeFromCart(id: string) {
+  const res = await fetch(`${API_REST}/tickets/${id}`, {
     method: "DELETE",
     credentials: "include",
-    headers: {   "Content-Type": "application/json" }
+    headers: {   "Content-Type": "application/json" },
+    body: JSON.stringify({ id}),
   });
   if (!res.ok) throw new Error("Erreur lors de la suppression du ticket");
   return res.json();
@@ -95,26 +96,24 @@ export async function getPendingTickets() {
   });
   if (!res.ok) throw new Error("Erreur lors de la récupération du panier");
   const data = await res.json();
-  // 💡 Filtrons les résultats pour ne garder que ceux en statut "pending_payment"
+  //  Filtre des résultats pour ne garder que ceux en statut "pending_payment"
  if (data.data && data.data.tickets) {
     const pendingTickets = data.data.tickets.filter(
         (ticket: any) => ticket.status === "pending_payment"
     );
-    // ⚠️ Assurez-vous que la structure renvoyée correspond à votre type CartItem
     return pendingTickets.map((ticket: any) => ({
-      id: ticket.id, // L'ID du ticket est une chaîne (UUID), pas un nombre!
+      id: ticket.id, 
       matchId: ticket.matchId,
       category: ticket.category,
-      quantity: 1, // Un ticket représente une quantité de 1
+      quantity: 1, 
       price: ticket.price,
-      // NOTE: Le ticket de l'API représente 1 article. Vous devrez peut-être regrouper les articles identiques côté client si l'API ne le fait pas.
     }));
  }
   return res.json();
 }
 //voir tickets achetés
 export async function getTicket() {
-  const count = await fetch(`${API_REST}/tickets`, {
+  const res = await fetch(`${API_REST}/tickets`, {
     method: "GET",
     credentials: "include",
     headers: {
@@ -122,9 +121,9 @@ export async function getTicket() {
     },
   });
 
-  if (!count.ok) throw new Error("Erreur HTTP " + count.status);
+  if (!res.ok) throw new Error("Erreur HTTP " + res.status);
 
-  const data = await count.json();
+  const data = await res.json();
   return data.data as User;
 }
 // Payer les tickets du panier
@@ -138,29 +137,17 @@ export async function payPending() {
   return res.json();
 }
 
-// Valider (utiliser) un ticket acheté
-export async function validateTicket(ticketId: number) {
-  const res = await fetch(`${API_REST}/tickets/${ticketId}/validate`, {
+// Valider un ticket acheté
+export async function validateTicket(id: string, qrCode: string) {
+  const res = await fetch(`${API_REST}/tickets/${id}/validate`, {
     method: "POST",
     credentials: "include",
-    headers: {   "Content-Type": "application/json" }
+    headers: {   "Content-Type": "application/json" },
+    body: JSON.stringify({ qrCode}),
   });
   if (!res.ok) throw new Error("Erreur lors de la validation du ticket");
   return res.json();
 }
-// Passer une commande (simulée)
-export async function createOrder(items: CartItem[]) {
-  const res = await fetch(`${API_REST}/orders`, {
-    method: "POST",
-    credentials: "include",
-    headers: { "Content-Type": "application/json" },
-    body: JSON.stringify({ items }),
-  });
-  if (!res.ok) throw new Error("Erreur lors de la commande");
-  return res.json();
-}
-
-
 // Récupération des infos du compte connecté
 export async function signInGET(): Promise<User> {
   const res = await fetch(`${API_REST}/auth/me`, {
