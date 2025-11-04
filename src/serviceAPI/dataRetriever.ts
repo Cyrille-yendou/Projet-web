@@ -1,6 +1,5 @@
 
 import type { Match } from "../types/match";
-import type { Ticket } from "../types/ticket";
 import type { Team } from "../types/team";
 import type { Group } from "../types/group";
 import type { Availability } from "../types/availability";

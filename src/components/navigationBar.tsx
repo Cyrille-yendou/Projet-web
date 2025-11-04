@@ -73,7 +73,7 @@ export default function NavigationBar(props: Props) {
 
   return (
     <ElevationScroll {...props}>
-      <AppBar sx={{ backgroundColor: 'rgba(61, 72, 221, 0.8)' }}>
+      <AppBar sx={{ backgroundColor: 'rgba(4, 86, 148, 0.8)' }}>
         <Toolbar sx={{ gap: '25px' }}>
           <Button
             color="inherit"
@@ -83,7 +83,7 @@ export default function NavigationBar(props: Props) {
             sx={{
               backgroundColor: 'rgba(255, 255, 255, 0.2)',
               '&:hover': {
-                backgroundColor: '#6FB8D8',
+                backgroundColor: 'rgba(96, 184, 251, 0.8)',
               },
             }}
           >
@@ -98,7 +98,7 @@ export default function NavigationBar(props: Props) {
             sx={{
               backgroundColor: 'rgba(255, 255, 255, 0.2)',
               '&:hover': {
-                backgroundColor: '#6FB8D8',
+                backgroundColor: 'rgba(96, 184, 251, 0.8)',
               },
             }}
           >
@@ -113,7 +113,7 @@ export default function NavigationBar(props: Props) {
             sx={{
               backgroundColor: 'rgba(255, 255, 255, 0.2)',
               '&:hover': {
-                backgroundColor: '#6FB8D8',
+                backgroundColor: 'rgba(96, 184, 251, 0.8)',
               },
             }}
           >
@@ -128,7 +128,7 @@ export default function NavigationBar(props: Props) {
             sx={{
               backgroundColor: 'rgba(255, 255, 255, 0.2)',
               '&:hover': {
-                backgroundColor: '#6FB8D8',
+                backgroundColor: 'rgba(96, 184, 251, 0.8)',
               },
             }}
           >
