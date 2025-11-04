@@ -1,9 +1,8 @@
 
 export type CartItem = {
-  id: number;
+  id: string;
   matchId: number;
   category: string;
   quantity: number;
   price: number;
-  
 };

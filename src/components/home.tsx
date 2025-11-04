@@ -4,11 +4,13 @@ import { Box, Typography, Toolbar, CssBaseline } from "@mui/material";
 import MatchList from "./matchList";
 import MatchDetails from "./matchDetails";
 import NavigationBar from "./navigationBar";
+import Panier from "./panier";
 
 // Import des images de fond
 import football1 from "../assets/images/football1.jpg";
 import football2 from "../assets/images/football2.jpg";
 import football3 from "../assets/images/football3.png";
+
 
 const IMAGES = [football1, football2, football3];
 const ROTATION_INTERVAL = 4000; // 4 secondes
@@ -126,6 +128,7 @@ export default function Home() {
           <Route path="/" index element={<HomePage/>} />
           <Route path="matches" element={<MatchList/>} />
           <Route path="matches/:matchId" element={<MatchDetails/>} />
+          <Route path="/tickets/pending" element={<Panier/>} /> 
         </Routes>
       </Box>
     </Box>

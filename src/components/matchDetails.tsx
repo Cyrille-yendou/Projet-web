@@ -1,70 +1,114 @@
 import { useEffect, useState } from "react";
 import { useNavigate, useParams } from "react-router";
-import { getAvailabilityByMatchId, getMatchById, addToCart} from "../serviceAPI/dataRetriever";
+import { getAvailabilityByMatchId, getMatchById, addToCart, getTicket} from "../serviceAPI/dataRetriever";
 import type { Match } from "../types/match";
 import type { Availability } from "../types/availability";
 import { dateFormatDDMMYYYY, timeFormatHHMM } from "./toolBox";
-import type { PlaceAvailability } from "../types/placeAvailability";
+import { Link } from "react-router";
+
 
 export default function MatchDetails() {
   const { matchId } = useParams();
   const navigate = useNavigate();
-
-  // 1. Correction : Initialisation à null et types ajustés
+  
   const [match, setMatch] = useState<Match | null>(null);
   const [availability, setAvailability] = useState<Availability | null>(null);
   
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
-  // Quantités par catégorie
   const [quantities, setQuantities] = useState<Record<string, number>>({});
-  
+  const [userTicketCount, setUserTicketCount] = useState(0); 
+  const MAX_GLOBAL_TICKETS = 6;
+
+  const handleChangeQuantity = (category: string, newQuantity: number) => {
+    const value = Number(newQuantity);
+
+    // Vérification de NaN et conversion en entier
+    if (isNaN(value)) {
+      return;
+    }
+    
+    // Assurez-vous que la quantité est un entier et est dans la plage [1, 6]
+    // Math.max(1, ...) garantit qu'on ne descend pas en dessous du minimum d'achat
+    const safeQuantity = Math.max(1, Math.min(6, Math.floor(value))); 
+
+    setQuantities(prevQuantities => ({
+      ...prevQuantities,
+      [category]: safeQuantity,
+    }));
+  };
 
   useEffect(() => {
     const controller = new AbortController();
+    console.log("CHARGEMENT MatchDetails "+matchId);
+    
+    const id = Number(matchId);
+    if (isNaN(id)) {
+        setError("ID du match invalide.");
+        setLoading(false);
+        return;
+    }
 
-    getMatchById(Number(matchId))
+    getMatchById(id)
       .then(res => setMatch(res.data))
       .catch(err => setError(err.message));
 
-    getAvailabilityByMatchId(Number(matchId))
-      // J'ai corrigé setavailability en setAvailability
+    getAvailabilityByMatchId(id)
       .then(res => setAvailability(res.data))
       .catch((err) => setError(err.message))
       .finally(() => setLoading(false));
 
+    getTicket()
+      .then(user => setUserTicketCount(user.ticketCount))
+      .catch(err => console.error("Erreur de chargement du compte de billets:", err));
+
     return () => controller.abort();
-  }, [matchId]); // Ajout de matchId dans les dépendances pour une meilleure pratique
+  }, [matchId]); 
 
   if (loading) return <p>Chargement...</p>;
-  if (error) return <p>Erreur : {error}</p>;
+  if (error) return <p>❌ Erreur : {error}</p>;
 
-  // 3. Nouvelle Vérification Cruciale : S'assurer que les données sont chargées
-  if (!match || !availability) {
-    // Cela gère le cas où loading est false, mais les données sont toujours null (ex: l'API n'a rien retourné sans erreur formelle)
-    return <p>Impossible d'afficher les détails du match : données manquantes.</p>;
+  // Le 'match' et 'availability' sont garantis non-null ici après les vérifications
+  if (!match || !availability || !availability.categories) {
+    return <p>Impossible d'afficher les détails du match : données manquantes ou structure invalide.</p>;
   }
 
-  async function handleBuy(category: string, placeAv: PlaceAvailability) {
-    
-    // Le 'match' est garanti non-null ici grâce à la vérification ci-dessus
-    const quantity = quantities[category];
-    if (quantity < 1 || quantity > 6) {
-      alert("⚠️ Vous pouvez acheter entre 1 et 6 tickets maximum.");
+  async function handleBuy(category: string) {
+    const quantity = quantities[category]|| 1;
+    const matchId = match.id; 
+
+    if (userTicketCount + quantity > MAX_GLOBAL_TICKETS) {
+        alert(`❌ Limite dépassée : Vous avez déjà ${userTicketCount} billets. Vous ne pouvez ajouter que ${MAX_GLOBAL_TICKETS - userTicketCount} de plus.`);
+        return;
+    }
+
+    if (!matchId || typeof matchId !== 'number') {
+        alert("Erreur: ID du match non trouvé.");
+        return;
+    }
+    if (quantity === undefined || quantity < 1 || quantity > 6) { 
+      alert("⚠️ Veuillez sélectionner une quantité valide (entre 1 et 6 tickets maximum).");
       return;
     }
 
     try {
-      await addToCart(match.id, placeAv.category, quantity);
+      
+      const res = await addToCart( matchId, category, quantity);
       alert(`🎟️ ${quantity} ticket(s) ajouté(s) au panier avec succès !`);
-      navigate("/panier");
+      console.log("✅ Billets ajoutés au panier avec succès !");
+      console.log("Réponse du serveur :", res);
     } catch (err) {
-      alert("❌ Erreur lors de l’ajout au panier.");
+      if (err instanceof Error) {
+        alert(`❌ Erreur : ${err.message}`); 
+      } else {
+        alert("❌ Erreur lors de l’ajout au panier. Cause inconnue.");
+        console.error("Erreur inattendue attrapée:", err);
+      }
+       navigate("/tickets/pending");
     }
-  }
+}
 
-  // Le rendu principal est maintenant sécurisé
   return (
     <div>
       <h2>Informations du Match n°{match.id}</h2>
@@ -81,33 +125,45 @@ export default function MatchDetails() {
       <h4>— {match.availableSeats} Places disponibles —</h4>
 
       <ul>
-        {Object.entries(availability.categories).map(([key, placeAv]) => (
-          <li key={key}>
-            {key} : {placeAv.available ? (
-              <div>
-                {placeAv.availableSeats} places disponibles <br />
-                <label>
-                  Quantité :
-                  <input
-                    type="number"
-                    min={1}
-                    max={6}
-                    value={quantities[key] || 1}
-                    onChange={(e) =>
-                      setQuantities(prev => ({ ...prev, [key]: Number(e.target.value) }))
-                    }
-                  />
-                </label>
-                <button onClick={() => handleBuy(key, placeAv)}>
-                  Acheter à {(placeAv.price * match.priceMultiplier * (quantities[key] || 1)).toFixed(2)} €
-                </button>
-              </div>
-            ) : (
-              <div>Aucune place disponible</div>
-            )}
-          </li>
-        ))}
+        {Object.entries(availability.categories).map(([key, placeAv]) => {
+          const currentQuantity = quantities[key] || 1;
+          
+          return (
+            <li key={key}>
+              {key} : {placeAv.available ? (
+                <div>
+                  {placeAv.availableSeats} places disponibles <br />
+                  <label>
+                    Quantité :
+                    <input
+                      type="number"
+                      min={1}
+                      max={6}
+                      value={currentQuantity}
+                      onChange={(e) => 
+                          handleChangeQuantity(key, Number(e.target.value))
+                      }
+                    />
+                  </label>
+                  <button 
+                    onClick={() => handleBuy(key)}
+                    // Désactivation si la quantité n'est pas dans la plage valide
+                    disabled={currentQuantity < 1 || currentQuantity > 6} 
+                  >
+                    Acheter à {(placeAv.price * match.priceMultiplier * currentQuantity).toFixed(2)} €
+                  </button>
+                </div>
+              ) : (
+                <div>Aucune place disponible</div>
+              )}
+            </li>
+          );
+        })}
       </ul>
+      <br />
+      <h4> 
+        <Link to={"/tickets/pending"} > Voir mon Panier</Link>  
+      </h4>
     </div>
   );
 }

@@ -3,7 +3,7 @@ import { getPendingTickets, removeFromCart, payPending } from "../serviceAPI/dat
 import type { CartItem } from "../types/CartItem";
 import { Link } from "react-router";
 
-export default function CartPage() {
+export default function Panier() {
   const [cart, setCart] = useState<CartItem[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
@@ -29,7 +29,7 @@ export default function CartPage() {
   }, []);
 
   // Supprimer un ticket
-  const handleRemove = async (ticketId: number) => {
+  const handleRemove = async (ticketId: string) => {
     try {
       await removeFromCart(ticketId);
       alert("Ticket supprimé du panier ✅");

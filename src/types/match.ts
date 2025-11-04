@@ -12,4 +12,5 @@ export type Match = {
   date: Date;
   availableSeats: number; // nombre de places restantes
   priceMultiplier: number; // prix unitaire pour un ticket
+  //category: string;
 }
