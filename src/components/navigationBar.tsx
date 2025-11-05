@@ -16,7 +16,7 @@ interface Props {
   children?: React.ReactElement<{ elevation?: number }>;
 }
 
-//Gérer l'UI du panier
+// gérer l'UI du panier
 const CartBadge = styled(Badge)`
   & .${badgeClasses.badge} {
     top: -12px;
@@ -24,7 +24,7 @@ const CartBadge = styled(Badge)`
   }
 `;
 
-//Pour faire en sorte que la navbar reste "au dessus" du contenu
+// pour faire en sorte que la navbar reste "au dessus" du contenu
 function ElevationScroll(props: Props) { 
   const { children, window } = props;
   const trigger = useScrollTrigger({
@@ -150,10 +150,10 @@ export default function NavigationBar(props: Props) {
             Tickets
           </Button>
 
-          {/* On space pour avoir les icônes tout à droite, là où c'est plus logique */}
+          {/*on space pour avoir les icônes tout à droite, là où c'est plus logique */}
           <Box sx={{ flexGrow: 1 }} />
 
-          {/* Attribut badgeContent pour afficher le contenu du panier !! (Utile pour voir les tickets qu'on va acheter !!!!!!!!) ex : badgeContent={2} => affiche le ptit 2*/}
+          {/*attribut badgeContent pour afficher le contenu du panier !! (Utile pour voir les tickets qu'on va acheter !!!!!!!!) ex : badgeContent={2} => affiche le ptit 2*/}
           <IconButton onClick={handleClick}>
             <ShoppingCartIcon fontSize="medium" />
             <CartBadge color="primary" overlap="circular" /> 
