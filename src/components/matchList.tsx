@@ -230,7 +230,7 @@ export default function MatchList() {
         </Box>
       </Box>
 
-      {/* les cartes pour les matchs*/}
+      {/*les cartes pour les matchs*/}
       <Box
         sx={{
           display: "grid",

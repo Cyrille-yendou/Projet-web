@@ -6,6 +6,8 @@ import MatchDetails from "./matchDetails";
 import NavigationBar from "./navigationBar";
 import Panier from "./panier";
 import TicketsList from "./tickets"
+import GroupList from "./groupList";
+
 
 // Import des images de fond
 import football1 from "../assets/images/football1.jpg";
@@ -48,7 +50,7 @@ function HomePage() {
 export default function Home() {
   const [currentIndex, setCurrentIndex] = useState(0);
 
-  // Rotation des images
+  //rota des images
   useEffect(() => {
     const interval = setInterval(() => {
       setCurrentIndex((prev) => (prev + 1) % IMAGES.length);
@@ -67,15 +69,16 @@ export default function Home() {
         padding: 0,
       }}
     >
+      {/* Reset du css */}
       <CssBaseline />
       
-      {/* Navbar fixe */}
+      {/*navbar fixe */}
       <NavigationBar/>
       
-      {/* Espace pour la navbar */}
+      {/*l'espace pour la navbar */}
       <Toolbar />
 
-      {/* Style de l'arrière-plan (pour que les images tournent) */}
+      {/*style de l'arrière-plan (pour que les images tournent) */}
       {IMAGES.map((src, index) => (
         <Box
           key={src}
@@ -97,7 +100,7 @@ export default function Home() {
         />
       ))}
 
-      {/* Dégradé pour éviter que les images accaparent toute l'attention */}
+      {/*dégradé pour éviter que les images de fond accaparent toute l'attention */}
       <Box
         sx={{
           position: "fixed",
@@ -107,7 +110,7 @@ export default function Home() {
         }}
       />
 
-      {/* Centre le contenu */}
+      {/*centre le contenu */}
       <Box
         sx={{
           position: "relative",
@@ -124,13 +127,14 @@ export default function Home() {
           py: 4,
         }}
       >
-        {/* Routes */}
+        {/*routes */}
         <Routes>
           <Route path="/" index element={<HomePage/>} />
           <Route path="matches" element={<MatchList/>} />
           <Route path="matches/:matchId" element={<MatchDetails/>} />
           <Route path="/tickets/pending" element={<Panier/>} /> 
-          <Route path="/tickets" element={<TicketsList/>} /> 
+          <Route path="/tickets" element={<TicketsList/>} />
+          <Route path="/groups" element={<GroupList/>} />
         </Routes>
       </Box>
     </Box>

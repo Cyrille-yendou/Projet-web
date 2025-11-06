@@ -40,10 +40,10 @@ export default function Panier() {
     if (!TicketId) return;
     try {
       await removeFromCart(TicketId);
-      alert("🗑️ Ticket supprimé avec succès !");
+      alert("Ticket supprimé avec succès !");
       loadCart();
     } catch {
-      alert("Erreur lors de la suppression ❌");
+      alert("Erreur lors de la suppression");
     } finally {
       setModalType(null);
       setTicketId(null);
@@ -59,11 +59,11 @@ export default function Panier() {
     }
     try {
       await payPending();
-      alert("🎉 Paiement effectué avec succès !");
+      alert("Paiement effectué avec succès !");
       setCart([]);
       setTotal(0);
     } catch {
-      alert("Erreur lors du paiement ❌");
+      alert("Erreur lors du paiement ");
     } finally {
       setModalType(null);
     }
@@ -75,7 +75,7 @@ export default function Panier() {
 
   return (
     <div className="max-w-5xl mx-auto mt-10 p-6">
-      <h2 className="text-2xl font-bold mb-6 text-center">🛒 Mon Panier</h2>
+      <h2 className="text-2xl font-bold mb-6 text-center">Mon Panier</h2>
 
       {cart.length === 0 ? (
         <p className="text-center">
