@@ -7,7 +7,7 @@ import NavigationBar from "./navigationBar";
 import Panier from "./panier";
 import TicketsList from "./tickets"
 import GroupList from "./groupList";
-
+import TeamList from "./teamList";
 
 // Import des images de fond
 import football1 from "../assets/images/football1.jpg";
@@ -135,6 +135,7 @@ export default function Home() {
           <Route path="/tickets/pending" element={<Panier/>} /> 
           <Route path="/tickets" element={<TicketsList/>} />
           <Route path="/groups" element={<GroupList/>} />
+          <Route path="/teams" element={<TeamList/>} />
         </Routes>
       </Box>
     </Box>

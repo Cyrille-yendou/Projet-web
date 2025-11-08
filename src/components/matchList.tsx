@@ -290,7 +290,7 @@ export default function MatchList() {
                   my: 3,
                 }}
               >
-                {/* le contenu de l'équipe à domicile */}
+                {/*le contenu de l'équipe à domicile */}
                 <Box sx={{ textAlign: "center", flex: 1 }}>
                   <Box
                     component="img"
@@ -312,7 +312,7 @@ export default function MatchList() {
                   VS
                 </Typography>
 
-                {/*pour l'équipe qui vient (extérieur)*/}
+                {/*pour l'équipe qui vient (visiteur)*/}
                 <Box sx={{ textAlign: "center", flex: 1 }}>
                   <Box
                     component="img"

@@ -1,24 +1,37 @@
 import { useEffect, useState } from "react";
-import { getGroups } from "../serviceAPI/dataRetriever";
-import type { Group } from "../types/group";
-import { Card, CardContent, Typography, Box, Select, MenuItem, FormControl, InputLabel, Chip, Container, CircularProgress, Alert, } from "@mui/material";
+import { getTeams } from "../serviceAPI/dataRetriever";
+import type { Team } from "../types/team";
+import {
+  Card,
+  CardContent,
+  Typography,
+  Box,
+  Select,
+  MenuItem,
+  FormControl,
+  InputLabel,
+  Chip,
+  Container,
+  CircularProgress,
+  Alert,
+} from "@mui/material";
 
-export default function GroupList() {
+export default function TeamList() {
   const PATH_IMG_FLAGS = "/assets/flags/";
 
-  const [groups, setGroups] = useState<Group[]>([]);
+  const [teams, setTeams] = useState<Team[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
-  const [filterGroup, setFilterGroup] = useState("");
+  const [filterContinents, setFilterContinents] = useState<string[]>([]);
 
   useEffect(() => {
-    getGroups()
-      .then((res) => setGroups(res.data))
+    getTeams()
+      .then((res) => setTeams(res.data))
       .catch((err) => setError(err.message))
       .finally(() => setLoading(false));
   }, []);
 
-  //comme sur teamList, on évite le scroll horizontal (présent sur toutes les pages)
+  //éviter l'apparition de la barre de scroll horizontale
   useEffect(() => {
     document.body.style.overflowX = "hidden";
     return () => {
@@ -40,10 +53,11 @@ export default function GroupList() {
       </Container>
     );
 
-  const filteredGroups = groups.filter(
-    (g) =>
-      filterGroup === "" ||
-      g.name.toLowerCase().includes(filterGroup.toLowerCase())
+  const fc_Options = Array.from(new Set(teams.map((t) => t.continent))).sort();
+
+  const filteredTeams = teams.filter(
+    (team) =>
+      filterContinents.length === 0 || filterContinents.includes(team.continent)
   );
 
   return (
@@ -57,10 +71,10 @@ export default function GroupList() {
       }}
     >
       <Typography variant="h4" gutterBottom textAlign="center">
-        Liste des groupes
+        Liste des équipes participantes
       </Typography>
 
-      {/*l'ui du filtre (comme d'hab)*/}
+      {/*pour le filtre*/}
       <Box
         sx={{
           mb: 5,
@@ -80,11 +94,11 @@ export default function GroupList() {
           gutterBottom
           sx={{ color: "rgba(0, 0, 0, 0.8)" }}
         >
-          Filtre par nom de groupe
+          Filtre par continent
         </Typography>
 
         <Chip
-          label={`${filteredGroups.length} groupe(s) correspondant(s)`}
+          label={`${filteredTeams.length} équipe(s) correspondante(s)`}
           color="primary"
           sx={{
             mb: 2,
@@ -102,23 +116,26 @@ export default function GroupList() {
             borderRadius: 2,
           }}
         >
-          <InputLabel>Nom du groupe</InputLabel>
+          <InputLabel>Continent(s)</InputLabel>
           <Select
-            value={filterGroup}
-            label="Nom du groupe"
-            onChange={(e) => setFilterGroup(e.target.value)}
+            multiple
+            value={filterContinents}
+            onChange={(e) =>
+              setFilterContinents(e.target.value as string[])
+            }
+            label="Continent(s)"
+            renderValue={(selected) => (selected as string[]).join(", ")}
           >
-            <MenuItem value="">Tous les groupes</MenuItem>
-            {groups.map((g) => (
-              <MenuItem key={g.id} value={g.name}>
-                Groupe {g.name}
+            {fc_Options.map((continent) => (
+              <MenuItem key={continent} value={continent}>
+                {continent}
               </MenuItem>
             ))}
           </Select>
         </FormControl>
       </Box>
 
-      {/*les card pour lister les diff groupes*/}
+      {/*la liste des équipes*/}
       <Box
         sx={{
           display: "grid",
@@ -131,9 +148,9 @@ export default function GroupList() {
           fontFamily: "Montserrat, sans-serif",
         }}
       >
-        {filteredGroups.map((g) => (
+        {filteredTeams.map((t) => (
           <Card
-            key={g.id}
+            key={t.id}
             sx={{
               position: "relative",
               width: "100%",
@@ -149,7 +166,7 @@ export default function GroupList() {
             }}
           >
             <Chip
-              label={`Groupe ${g.name}`}
+              label={`Equipe n°${t.id}`}
               size="small"
               color="primary"
               sx={{
@@ -164,37 +181,26 @@ export default function GroupList() {
               <Box
                 sx={{
                   display: "flex",
-                  flexDirection: "column",
-                  gap: 1.5,
-                  alignItems: "flex-start",
+                  alignItems: "center",
+                  justifyContent: "center",
+                  gap: 2,
+                  width: "100%",
                 }}
               >
-                {g.teams.map((team) => (
-                  <Box
-                    key={team.code}
-                    sx={{
-                      display: "flex",
-                      alignItems: "center",
-                      gap: 2,
-                      width: "100%",
-                    }}
-                  >
-                    <Box
-                      component="img"
-                      src={`${PATH_IMG_FLAGS}${team.code}.png`}
-                      alt={team.name}
-                      sx={{
-                        width: 36,
-                        height: 26,
-                        objectFit: "contain",
-                        borderRadius: 1,
-                      }}
-                    />
-                    <Typography variant="body1" fontWeight="bold">
-                      {team.name}
-                    </Typography>
-                  </Box>
-                ))}
+                <Box
+                  component="img"
+                  src={`${PATH_IMG_FLAGS}${t.code}.png`}
+                  alt={t.name}
+                  sx={{
+                    width: 48,
+                    height: 36,
+                    objectFit: "contain",
+                    borderRadius: 1,
+                  }}
+                />
+                <Typography variant="h6" fontWeight="bold">
+                  {t.name}
+                </Typography>
               </Box>
             </CardContent>
           </Card>
