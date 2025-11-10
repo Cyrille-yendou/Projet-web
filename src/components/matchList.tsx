@@ -4,7 +4,7 @@ import type { Match } from "../types/match";
 import type { Team } from "../types/team";
 import type { Group } from "../types/group";
 import { Link } from "react-router-dom";
-import { dateFormatDDMMYYYY } from "./toolBox";
+import { dateFormatDDMMYYYY, timeFormatHHMM } from "./toolBox";
 import {
   Card,
   CardContent,
@@ -19,6 +19,7 @@ import {
   Container,
   CircularProgress,
   Alert,
+  Input,
 } from "@mui/material";
 import { Stadium, CalendarToday, AccessTime } from "@mui/icons-material";
 
@@ -56,14 +57,6 @@ export default function MatchList() {
         filterDate.length === 0 ||
         filterDate.includes(match.date.toString().substring(0, 10))
     );
-
-  const getMatchTime = (dateString: string) => {
-    const date = new Date(dateString);
-    return date.toLocaleTimeString("fr-FR", {
-      hour: "2-digit",
-      minute: "2-digit",
-    });
-  };
 
   useEffect(() => {
     const controller = new AbortController();
@@ -172,6 +165,12 @@ export default function MatchList() {
             fullWidth
             type="date"
             onChange={(e) => setFilterDate(e.target.value)}
+            InputProps={{
+              inputProps: {
+                min: fd_Boundary[0],
+                max: fd_Boundary[1],
+              },
+            }}
             sx={{ flex: 1, minWidth: "250px" }}
           />
           <FormControl fullWidth sx={{ flex: 1, minWidth: "250px" }}>
@@ -337,7 +336,7 @@ export default function MatchList() {
                 >
                   <AccessTime sx={{ fontSize: 18, color: "text.secondary" }} />
                   <Typography variant="body2" color="#666">
-                    {getMatchTime(m.date)}
+                    {timeFormatHHMM(m.date)}
                   </Typography>
                 </Box>
                 <Box sx={{ display: "flex", alignItems: "center", gap: 1 }}>
