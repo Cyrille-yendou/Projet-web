@@ -6,11 +6,14 @@ import MatchDetails from "./matchDetails";
 import NavigationBar from "./navigationBar";
 import Panier from "./panier";
 import TicketsList from "./tickets"
+import Authentification from "./authentication";
+import HistoriqueCommandes from "./historiqueCommandes";
 
 // Import des images de fond
 import football1 from "../assets/images/football1.jpg";
 import football2 from "../assets/images/football2.jpg";
 import football3 from "../assets/images/football3.png";
+
 
 
 const IMAGES = [football1, football2, football3];
@@ -131,6 +134,8 @@ export default function Home() {
           <Route path="matches/:matchId" element={<MatchDetails/>} />
           <Route path="/tickets/pending" element={<Panier/>} /> 
           <Route path="/tickets" element={<TicketsList/>} /> 
+          <Route path="/authentification" element={<Authentification/>}/>
+          <Route path="/historique" element={<HistoriqueCommandes/>}/>
         </Routes>
       </Box>
     </Box>

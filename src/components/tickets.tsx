@@ -67,7 +67,7 @@ export default function TicketsList() {
 
   if (loading) return <p className="text-center mt-10">Chargement des tickets...</p>;
   if (error) return <p className="text-center text-red-500 mt-10">{error}</p>;
-  if (!ticketsData) return <p>Aucun ticket trouvé.</p>;
+  if (!ticketsData || !ticketsData.counts || !ticketsData.grouped) return <p>Aucun ticket trouvé.</p>;
 
   const { grouped, counts } = ticketsData;
 
@@ -133,8 +133,8 @@ export default function TicketsList() {
 
               <div className="text-gray-700">
                 <p>
-                  <strong>Match :</strong> {ticket.match.homeTeam.name} vs{" "}
-                  {ticket.match.awayTeam.name}
+                  <strong>Match :</strong> {ticket.match.homeTeam} vs{" "}
+                  {ticket.match.awayTeam}
                 </p>
                 <p>
                   <strong>Date :</strong>{" "}

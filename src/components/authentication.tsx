@@ -1,8 +1,10 @@
 import { Box, Typography } from "@mui/material";
 import { useEffect, useState, type MouseEventHandler } from "react";
-import { signInGET, signInPOST, signOut, signUp } from "../serviceAPI/authenticator";
+import {  signInPOST, signOut, signUp } from "../serviceAPI/authenticator";
 import type { User } from "../types/user";
 import { dateFormatDDMMYYYY } from "./toolBox";
+import { useAuth } from "../hook/useAuth";
+import { Link } from "react-router-dom";
 
 const style = {
     position: 'absolute',
@@ -17,16 +19,14 @@ const style = {
 };
 
 
-interface AuthProps {
-    user: User;
-    setUser: (user: User) => void;
-    isConnected: boolean;
-    setIsConnected: (bool: boolean) => void;
-}
-
-
-
-export default function Authentification({ user, setUser, isConnected, setIsConnected }: AuthProps) {
+export default function Authentification() {
+    const { 
+        user, 
+        isAuthenticated, 
+        setUser, 
+        setIsAuthenticated, 
+        checkAuth 
+    } = useAuth();
     const [loading, setLoading] = useState<boolean>(false);
     const [error, setError] = useState<string | null>(null);
 
@@ -34,10 +34,9 @@ export default function Authentification({ user, setUser, isConnected, setIsConn
         setLoading(true);
         signInPOST(data.get("email"), data.get("password"))
             .then(async res => {
-                setIsConnected(res);
                 if (res) {
-                    const profil = await signInGET();
-                    setUser(profil); // récupère le profil
+                    setIsAuthenticated(true); //connexion
+                   await checkAuth(); // récupration du profil
                 }
             })
             .catch((err) => setError(err.message))
@@ -53,11 +52,14 @@ export default function Authentification({ user, setUser, isConnected, setIsConn
             email: data.get("email"),
             password: data.get("password"),
             birthDate: data.get("birthDate"),
+            ticketCount: data.get("ticketCount")
         }
         signUp(buffer)
-            .then(async res => {
-                setIsConnected(res);
-                if (res) setUser(buffer); // récupère le profil
+            .then(async res => {   
+                if (res) {
+                    setIsAuthenticated(true);
+                    setUser(buffer); // récupère le profil
+                }
             })
             .catch((err) => setError(err.message))
             .finally(() => setLoading(false));
@@ -67,30 +69,44 @@ export default function Authentification({ user, setUser, isConnected, setIsConn
         setLoading(true);
         signOut()
             .then(res => {
-                setIsConnected(!res); // (true=deco, false=toujours co)
-                if (!res) setUser({   // si deco, clear les variables
-                    firstname: "",
-                    lastname: "",
-                    email: "",
-                    password: "",
-                    birthDate: new Date(),
-                });
+                if (!res) {    // si deco, clear les variables
+                    setIsAuthenticated(false);
+                    setUser(null); // Clear l'utilisateur (sera mis à initialUser par le Provider)
+                } else {
+                    setError("Déconnexion API échouée.");
+                }
             })
+            .catch((err) => setError(err.message))
             .finally(() => setLoading(false));
     }
 
     if (loading) return <Box sx={style}><p>Chargement...</p></Box>;
 
-    if (isConnected)
+    if (isAuthenticated)
         return (
             <Box sx={style}>
+                {user &&(
+                    <>  
                 <h2>Ravi de vous voir,<br></br> {user.firstname} {user.lastname} !</h2>
                 <span>
                     <i>Née le {dateFormatDDMMYYYY(user.birthDate.toString())}</i> <br></br><br></br>
                     <label>Email : <input type="text" value={user.email || ""} readOnly /> </label> <br></br> <br></br>
                 </span>
+                <Link 
+                    to="/historique" 
+                    style={{ 
+                    display: 'block', 
+                    marginBottom: '10px', 
+                    color: '#1976D2', 
+                    textDecoration: 'underline' 
+                    }}
+                    >
+                        🧾 Consulter mes commandes
+                    </Link>
                 <button onClick={signingOut}>Se déconnecter</button>
-
+                </>
+                )}
+                {!user && <p>Récupération du profil...</p>}
             </Box>
         );
     else {
