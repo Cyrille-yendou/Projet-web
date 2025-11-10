@@ -82,7 +82,7 @@ export default function MatchDetails() {
   }, [matchId]); 
 
   if (loading) return <p>Chargement...</p>;
-  if (error) return <p>❌ Erreur : {error}</p>;
+  if (error) return <p>Erreur : {error}</p>;
 
   // Le 'match' et 'availability' sont garantis non-null ici après les vérifications
   if (!match || !availability || !availability.categories) {
@@ -94,7 +94,7 @@ export default function MatchDetails() {
     const matchId = match.id; 
 
     if (userTicketCount + quantity > MAX_GLOBAL_TICKETS) {
-        alert(`❌ Limite dépassée : Vous avez déjà ${userTicketCount} billets. Vous ne pouvez ajouter que ${MAX_GLOBAL_TICKETS - userTicketCount} de plus.`);
+        alert(`Limite dépassée : Vous avez déjà ${userTicketCount} billets. Vous ne pouvez ajouter que ${MAX_GLOBAL_TICKETS - userTicketCount} de plus.`);
         return;
     }
 
@@ -103,211 +103,214 @@ export default function MatchDetails() {
         return;
     }
     if (quantity === undefined || quantity < 1 || quantity > 6) { 
-      alert("⚠️ Veuillez sélectionner une quantité valide (entre 1 et 6 tickets maximum).");
+      alert("Veuillez sélectionner une quantité valide (entre 1 et 6 tickets maximum).");
       return;
     }
 
     try {
-      
       const res = await addTicket( matchId, category, quantity);
-      alert(`🎟️ ${quantity} ticket(s) ajouté(s) au panier avec succès !`);
-      console.log("✅ Billets ajoutés au panier avec succès !");
-      console.log("Réponse du serveur :", res);
+      alert(`${quantity} ticket(s) ajouté(s) au panier avec succès !`);
+      //debug
+      //console.log("Billets ajoutés au panier avec succès !");
+      //console.log("Réponse du serveur :", res);
     } catch (err) {
       if (err instanceof Error) {
-        alert(`❌ Erreur : ${err.message}`); 
+        alert(`Erreur : ${err.message}`); 
+        navigate("/matches/"+matchId); //on renvoie l'utilisateur sur la page du détail du match
       } else {
-        alert("❌ Erreur lors de l’ajout au panier. Cause inconnue.");
-        console.error("Erreur inattendue attrapée:", err);
+        alert("Erreur lors de l’ajout au panier. Cause inconnue.");
+        //console.error("Erreur inattendue attrapée:", err);
       }
-       navigate("/tickets");
+       navigate("/matches/"+matchId); //pareil
     }
 }
 
-  return (
-    <Container sx={{ py: 5, fontFamily: "Montserrat, sans-serif" }}>
-      <Card
+return (
+  <Container sx={{ py: 5, fontFamily: "Montserrat, sans-serif" }}>
+    <Card
+      sx={{
+        maxWidth: 800,
+        mx: "auto",
+        boxShadow: 4,
+        borderRadius: 3,
+        bgcolor: "white",
+      }}
+    >
+      {/* Bandeau titre bleu */}
+      <Box
         sx={{
-          maxWidth: 800,
-          mx: "auto",
-          boxShadow: 4,
-          borderRadius: 3,
-          bgcolor: "white",
+          bgcolor: "rgba(4, 86, 148, 0.9)",
+          color: "white",
+          py: 2,
+          textAlign: "center",
+          borderTopLeftRadius: 12,
+          borderTopRightRadius: 12,
         }}
       >
-        {/* Bandeau titre bleu */}
-        <Box
-          sx={{
-            bgcolor: "rgba(4, 86, 148, 0.9)",
-            color: "white",
-            py: 2,
-            textAlign: "center",
-            borderTopLeftRadius: 12,
-            borderTopRightRadius: 12,
-          }}
-        >
-          <Typography variant="h5" fontWeight="bold">
-            Informations du match n°{match.id}
+        <Typography variant="h5" fontWeight="bold">
+          Informations du match n°{match.id}
+        </Typography>
+      </Box>
+
+      <CardContent sx={{ p: 4 }}>
+        {/*l'en-tête avec les équipes (globalement pareil que matchList*/}
+        <Box sx={{ textAlign: "center", mb: 3 }}>
+          <Box
+            sx={{
+              display: "flex",
+              justifyContent: "center",
+              alignItems: "center",
+              gap: 4,
+              flexWrap: "wrap",
+            }}
+          >
+            {/*l'équipe à domicile*/}
+            <Box sx={{ textAlign: "center" }}>
+              <Box
+                component="img"
+                src={`${PATH_IMG_FLAGS}${match.homeTeam.code}.png`}
+                alt={match.homeTeam.name}
+                sx={{ width: 64, height: 48 }}
+              />
+              <Typography variant="body1" fontWeight="bold">
+                {match.homeTeam.name}
+              </Typography>
+            </Box>
+
+            {/*le vs*/}
+            <Typography variant="h6" sx={{ color: "rgba(153,153,153,1)" }}>
+              VS
+            </Typography>
+
+            {/*la carte de l'équipe à l'extérieur*/}
+            <Box sx={{ textAlign: "center" }}>
+              <Box
+                component="img"
+                src={`${PATH_IMG_FLAGS}${match.awayTeam.code}.png`}
+                alt={match.awayTeam.name}
+                sx={{ width: 64, height: 48 }}
+              />
+              <Typography variant="body1" fontWeight="bold">
+                {match.awayTeam.name}
+              </Typography>
+            </Box>
+          </Box>
+        </Box>
+
+        <Divider sx={{ my: 2 }} />
+
+        {/*les informations date + lieu*/}
+        <Box sx={{ textAlign: "center" }}>
+          <Typography variant="body2" color="text.secondary" sx={{ mb: 1 }}>
+            <CalendarToday sx={{ fontSize: 16, mr: 0.5, verticalAlign: "middle" }} />
+            Le {dateFormatDDMMYYYY(match.date)} à {timeFormatHHMM(match.date)}
+          </Typography>
+
+          <Typography variant="body2" color="text.secondary">
+            <Stadium sx={{ fontSize: 16, mr: 0.5, verticalAlign: "middle" }} />
+            {match.stadium.name} — {match.stadium.city}, {match.stadium.country}
+          </Typography>
+
+          <Typography
+            variant="h6"
+            sx={{ mt: 2, color: "rgba(4, 86, 148, 0.9)", fontWeight: "bold" }}
+          >
+            {match.availableSeats} places disponibles
           </Typography>
         </Box>
 
-        <CardContent sx={{ p: 4 }}>
-          {/* En-tête avec équipes */}
-          <Box sx={{ textAlign: "center", mb: 3 }}>
-            <Grid
-              container
-              alignItems="center"
-              justifyContent="center"
-              spacing={4}
-            >
-              <Grid item>
-                <Box
-                  component="img"
-                  src={`${PATH_IMG_FLAGS}${match.homeTeam.code}.png`}
-                  alt={match.homeTeam.name}
-                  sx={{ width: 64, height: 48 }}
-                />
-                <Typography variant="body1" fontWeight="bold">
-                  {match.homeTeam.name}
-                </Typography>
-              </Grid>
+        <Divider sx={{ my: 3 }} />
 
-              <Grid item>
-                <Typography
-                  variant="h6"
-                  sx={{ color: "rgba(153,153,153,1)" }}
-                >
-                  VS
-                </Typography>
-              </Grid>
+        {/*catégories dispo*/}
+        <Box>
+          <Typography variant="h6" gutterBottom>
+            Catégories disponibles :
+          </Typography>
 
-              <Grid item>
-                <Box
-                  component="img"
-                  src={`${PATH_IMG_FLAGS}${match.awayTeam.code}.png`}
-                  alt={match.awayTeam.name}
-                  sx={{ width: 64, height: 48 }}
-                />
-                <Typography variant="body1" fontWeight="bold">
-                  {match.awayTeam.name}
-                </Typography>
-              </Grid>
-            </Grid>
-          </Box>
-
-          <Divider sx={{ my: 2 }} />
-
-          {/* Infos date et lieu */}
-          <Box sx={{ textAlign: "center" }}>
-            <Typography variant="body2" color="text.secondary" sx={{ mb: 1 }}>
-              <CalendarToday sx={{ fontSize: 16, mr: 0.5, verticalAlign: "middle" }} />
-              Le {dateFormatDDMMYYYY(match.date)} à {timeFormatHHMM(match.date)}
-            </Typography>
-
-            <Typography variant="body2" color="text.secondary">
-              <Stadium sx={{ fontSize: 16, mr: 0.5, verticalAlign: "middle" }} />
-              {match.stadium.name} — {match.stadium.city}, {match.stadium.country}
-            </Typography>
-
-            <Typography
-              variant="h6"
-              sx={{ mt: 2, color: "rgba(4, 86, 148, 0.9)", fontWeight: "bold" }}
-            >
-              {match.availableSeats} places disponibles
-            </Typography>
-          </Box>
-
-          <Divider sx={{ my: 3 }} />
-
-          {/* Catégories */}
-          <Box>
-            <Typography variant="h6" gutterBottom>
-              Catégories disponibles :
-            </Typography>
-
-            {Object.entries(availability.categories).map(([key, cat]) => {
-              const qty = quantities[key] || 1;
-              return (
-                <Paper
-                  key={key}
-                  sx={{
-                    p: 2,
-                    mb: 2,
-                    display: "flex",
-                    justifyContent: "space-between",
-                    alignItems: "center",
-                    bgcolor: cat.available ? "#f9f9f9" : "#eee",
-                    borderRadius: 2,
-                  }}
-                >
-                  <Box>
-                    <Typography fontWeight="bold">{key}</Typography>
-                    {cat.available ? (
-                      <Typography variant="body2" color="text.secondary">
-                        {cat.availableSeats} places — {cat.price} €
-                      </Typography>
-                    ) : (
-                      <Typography variant="body2" color="error">
-                        Aucune place disponible
-                      </Typography>
-                    )}
-                  </Box>
-
-                  {cat.available && (
-                    <Box sx={{ display: "flex", alignItems: "center", gap: 2 }}>
-                      <TextField
-                        type="number"
-                        size="small"
-                        label="Quantité"
-                        value={qty}
-                        onChange={(e) =>
-                          handleChangeQuantity(key, Number(e.target.value))
-                        }
-                        inputProps={{ min: 1, max: 6 }}
-                        sx={{ width: 80 }}
-                      />
-                      <Button
-                        variant="contained"
-                        sx={{
-                          backgroundColor: "rgba(4, 86, 148, 0.9)",
-                          "&:hover": {
-                            backgroundColor: "rgba(4, 86, 148, 1)",
-                          },
-                        }}
-                        onClick={() => handleBuy(key)}
-                      >
-                        Acheter ({(cat.price * match.priceMultiplier * qty).toFixed(2)} €)
-                      </Button>
-                    </Box>
+          {Object.entries(availability.categories).map(([key, cat]) => {
+            const qty = quantities[key] || 1;
+            return (
+              <Paper
+                key={key}
+                sx={{
+                  p: 2,
+                  mb: 2,
+                  display: "flex",
+                  justifyContent: "space-between",
+                  alignItems: "center",
+                  bgcolor: cat.available ? "rgba(249, 249, 249, 1)" : "rgba(238, 238, 238, 1)",
+                  borderRadius: 2,
+                  flexWrap: "wrap",
+                  gap: 2,
+                }}
+              >
+                <Box>
+                  <Typography fontWeight="bold">{key}</Typography>
+                  {cat.available ? (
+                    <Typography variant="body2" color="text.secondary">
+                      {cat.availableSeats} places — {cat.price} €
+                    </Typography>
+                  ) : (
+                    <Typography variant="body2" color="error">
+                      Aucune place disponible
+                    </Typography>
                   )}
-                </Paper>
-              );
-            })}
-          </Box>
+                </Box>
 
-          <Divider sx={{ my: 3 }} />
+                {cat.available && (
+                  <Box sx={{ display: "flex", alignItems: "center", gap: 2 }}>
+                    <TextField
+                      type="number"
+                      size="small"
+                      label="Quantité"
+                      value={qty}
+                      onChange={(e) =>
+                        handleChangeQuantity(key, Number(e.target.value))
+                      }
+                      sx={{ width: 80 }}
+                    />
+                    <Button
+                      variant="contained"
+                      sx={{
+                        backgroundColor: "rgba(4, 86, 148, 0.8)",
+                        "&:hover": {
+                          backgroundColor: "rgba(4, 86, 148, 1)",
+                        },
+                      }}
+                      onClick={() => handleBuy(key)}
+                    >
+                      Acheter ({(cat.price * match.priceMultiplier * qty).toFixed(2)} €)
+                    </Button>
+                  </Box>
+                )}
+              </Paper>
+            );
+          })}
+        </Box>
 
-          {/* Bouton panier */}
-          <CardActions sx={{ justifyContent: "center" }}>
-            <Button
-              variant="outlined"
-              component={RouterLink}
-              to="/tickets/pending"
-              sx={{
-                borderColor: "rgba(4, 86, 148, 0.9)",
-                color: "rgba(4, 86, 148, 0.9)",
-                fontWeight: "bold",
-                "&:hover": {
-                  borderColor: "rgba(4, 86, 148, 1)",
-                  color: "rgba(4, 86, 148, 1)",
-                },
-              }}
-            >
-              Voir mon panier
-            </Button>
-          </CardActions>
-        </CardContent>
-      </Card>
-    </Container>
-  );
+        <Divider sx={{ my: 3 }} />
+
+        {/* Bouton panier */}
+        <CardActions sx={{ justifyContent: "center" }}>
+          <Button
+            variant="outlined"
+            component={Link}
+            to="/tickets/pending"
+            sx={{
+              borderColor: "rgba(4, 86, 148, 0.9)",
+              color: "rgba(4, 86, 148, 0.9)",
+              fontWeight: "bold",
+              "&:hover": {
+                borderColor: "rgba(4, 86, 148, 1)",
+                color: "rgba(4, 86, 148, 1)",
+              },
+            }}
+          >
+            Voir mon panier
+          </Button>
+        </CardActions>
+      </CardContent>
+    </Card>
+  </Container>
+); 
 }

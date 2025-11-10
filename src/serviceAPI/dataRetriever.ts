@@ -185,7 +185,7 @@ export async function getPaidTickets() {
   //  Filtre des résultats pour ne garder que ceux en statut "paid"
  if (data.data && data.data.tickets) {
     const pendingTickets = data.data.tickets.filter(
-        (ticket: any) => ticket.status === "confirmed"
+        (ticket: any) => ticket.status === "paid"
     );
     return pendingTickets.map((ticket: any) => ({
       id: ticket.id, 
