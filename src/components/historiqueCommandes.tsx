@@ -1,5 +1,5 @@
 
-import React, { useEffect, useState } from 'react';
+import { useEffect, useState } from 'react';
 import { useAuth } from '../hook/useAuth'; 
 import { getPaidTickets } from '../serviceAPI/dataRetriever'; 
 import { Link } from 'react-router-dom';
@@ -11,8 +11,7 @@ interface PaidTicket {
         awayTeam: { name: string };
     };
     category: string;
-    price: number;
-    purchaseDate?: string; 
+    price: number; 
 }
 
 export default function HistoriqueCommandes() {
@@ -33,8 +32,8 @@ export default function HistoriqueCommandes() {
             setLoading(true);
             setError(null);
             try {
-                const paidTickets = await getPaidTickets();
-                setHistory(paidTickets);
+                const confirmedTickets = await getPaidTickets();
+                setHistory(confirmedTickets);
             } catch (e) {
                 console.error("Erreur lors du chargement de l'historique:", e);
                 setError("Impossible de charger l'historique des commandes.");
@@ -88,16 +87,12 @@ export default function HistoriqueCommandes() {
                     >
                         <div>
                             <p className="text-lg font-bold text-gray-800">
-                                Match : {ticket.match.homeTeam.name} vs {ticket.match.awayTeam.name}
+                                Match : {ticket.match?.homeTeam} vs {ticket.match?.awayTeam}
                             </p>
+                            
                             <p className="text-sm text-gray-600 mt-1">
                                 Catégorie : <span className="font-medium">{ticket.category.replace("CATEGORY_", "")}</span>
                             </p>
-                            {ticket.purchaseDate && (
-                                <p className="text-xs text-gray-400">
-                                    Acheté le : {new Date(ticket.purchaseDate).toLocaleDateString()}
-                                </p>
-                            )}
                         </div>
                         <div className="text-right">
                             <p className="text-xl font-extrabold text-green-700">{ticket.price.toFixed(2)} €</p>

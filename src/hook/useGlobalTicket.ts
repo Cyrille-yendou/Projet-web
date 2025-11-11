@@ -1,4 +1,3 @@
-// useGlobalTicket.ts
 
 import { useContext, useCallback } from 'react'; 
 import { CartContext } from '../context/cartContext';

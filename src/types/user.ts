@@ -4,5 +4,5 @@ export type User = {
     email: string;
     password: string;
     birthDate: Date;
-    ticketCount: number;
+    //ticketCount: number;
 };

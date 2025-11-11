@@ -6,13 +6,10 @@ import MatchDetails from "./matchDetails";
 import NavigationBar from "./navigationBar";
 import Panier from "./panier";
 import TicketsList from "./tickets"
-<<<<<<< HEAD
 import Authentification from "./authentication";
 import HistoriqueCommandes from "./historiqueCommandes";
-=======
 import GroupList from "./groupList";
 import TeamList from "./teamList";
->>>>>>> 972a86ca589d5a0bd1eab08aedae6159ad75b0c6
 
 // Import des images de fond
 import football1 from "../assets/images/football1.jpg";
@@ -139,15 +136,12 @@ export default function Home() {
           <Route path="matches" element={<MatchList/>} />
           <Route path="matches/:matchId" element={<MatchDetails/>} />
           <Route path="/tickets/pending" element={<Panier/>} /> 
-<<<<<<< HEAD
           <Route path="/tickets" element={<TicketsList/>} /> 
           <Route path="/authentification" element={<Authentification/>}/>
           <Route path="/historique" element={<HistoriqueCommandes/>}/>
-=======
           <Route path="/tickets" element={<TicketsList/>} />
           <Route path="/groups" element={<GroupList/>} />
           <Route path="/teams" element={<TeamList/>} />
->>>>>>> 972a86ca589d5a0bd1eab08aedae6159ad75b0c6
         </Routes>
       </Box>
     </Box>

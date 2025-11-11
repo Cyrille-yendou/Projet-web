@@ -4,7 +4,7 @@ import { getAvailabilityByMatchId, getMatchById, addTicket, getTicket} from "../
 import type { Match } from "../types/match";
 import type { Availability } from "../types/availability";
 import { dateFormatDDMMYYYY, timeFormatHHMM } from "./toolBox";
-import { Link as RouterLink } from "react-router";
+import { Link } from "react-router";
 import {
   Box,
   Typography,

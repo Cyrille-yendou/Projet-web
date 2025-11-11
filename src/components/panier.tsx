@@ -2,7 +2,7 @@ import { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
 import {  removeFromTicket, payPending} from "../serviceAPI/dataRetriever";
 import { useGlobalCart } from "../hook/useGlobalTicket";
-import ModalConfirm from "./ModalConfirm";
+import ModalConfirm from "./modalConfirm";
 
 export default function Panier() {
  const { 
@@ -92,7 +92,7 @@ export default function Panier() {
                 </tr>
               </thead>
               <tbody>
-                {tickets.map((ticket) => (
+                {Array.isArray(tickets) && tickets.map((ticket) => (
                   <tr
                     key={ticket.id}
                     className="border-b hover:bg-gray-50 transition"

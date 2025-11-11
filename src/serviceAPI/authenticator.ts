@@ -31,7 +31,7 @@ export async function signInGET(): Promise<User> {
             "Content-Type": "application/json",
         }
     });
-    //if (!res.ok) throw new Error("Erreur HTTP "+ res.status); // erreur lors du chargement
+    if (!res.ok) throw new Error("Erreur HTTP "+ res.status); // erreur lors du chargement
     const data = await res.json();
     //console.log(data);
     //await new Promise(resolve => setTimeout(resolve, 5000)); test chargement

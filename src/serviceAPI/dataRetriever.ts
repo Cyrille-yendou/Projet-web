@@ -98,20 +98,26 @@ export async function getPendingTickets() {
     credentials: "include",
     headers: {    "Content-Type": "application/json"}
   });
-  if (!res.ok) throw new Error("Erreur lors de la récupération du panier");
+  if (!res.ok) {
+    if (res.status === 401) {
+      throw new Error("Authentification requise pour voir l'historique.");
+    }
+    throw new Error("Erreur lors de la récupération de l'historique (HTTP " + res.status + ")");
+  }
+  //if (!res.ok) throw new Error("Erreur lors de la récupération du panier");
   const data = await res.json();
   //  Filtre des résultats pour ne garder que ceux en statut "pending_payment"
  if (data.data && data.data.tickets) {
-    const pendingTickets = data.data.tickets.filter(
-        (ticket: any) => ticket.status === "pending_payment"
-    );
-    return pendingTickets.map((ticket: any) => ({
-      id: ticket.id, 
-      matchId: ticket.matchId,
-      category: ticket.category,
-      quantity: 1, 
-      price: ticket.price,
-    }));
+     const pendingTickets = data.data.tickets.filter(
+         (ticket: any) => ticket.status === "pending_payment"
+     );
+     return pendingTickets.map((ticket: any) => ({
+       id: ticket.id, 
+       matchId: ticket.matchId,
+       category: ticket.category,
+       quantity: 1, 
+       price: ticket.price,
+     }));
  }
   return res.json();
 }
@@ -141,7 +147,6 @@ export async function payPending() {
     credentials: "include",
     headers: {  "Content-Type": "application/json" }
    });
-   
    if (!res.ok) {
     if (res.status === 401) {
          throw new Error("Authentification requise pour payer les tickets.");
@@ -162,37 +167,41 @@ export async function validateTicket(id: string, qrCode: string) {
     headers: {   "Content-Type": "application/json" },
     body: JSON.stringify({ qrCode}),
   });
-  
-  if (!res.ok) throw new Error("Erreur lors de la validation du ticket");
-  return res.json();
-}
-
-// Voir les tickets déjà payé
-export async function getPaidTickets() {
-  const res = await fetch(`${API_REST}/tickets/pending`, {
-    method: "GET",
-    credentials: "include",
-    headers: {    "Content-Type": "application/json"}
-  });
-  if (!res.ok) throw new Error("Erreur lors de la récupération du panier");
-  const data = await res.json();
   if (!res.ok) {
     if (res.status === 401) {
       throw new Error("Authentification requise pour voir l'historique.");
     }
     throw new Error("Erreur lors de la récupération de l'historique (HTTP " + res.status + ")");
   }
-  //  Filtre des résultats pour ne garder que ceux en statut "paid"
- if (data.data && data.data.tickets) {
-    const pendingTickets = data.data.tickets.filter(
-        (ticket: any) => ticket.status === "paid"
-    );
-    return pendingTickets.map((ticket: any) => ({
-      id: ticket.id, 
-      matchId: ticket.matchId,
-      category: ticket.category,
-      price: ticket.price,
-    }));
- }
   return res.json();
 }
+
+// Voir les tickets déjà payé
+export async function getPaidTickets() {
+  const res = await fetch(`${API_REST}/tickets`, {
+    method: "GET",
+    credentials: "include",
+    headers: {    "Content-Type": "application/json"}
+  }); 
+  if (!res.ok) {
+    if (res.status === 401) {
+      throw new Error("Authentification requise pour voir l'historique.");
+    }
+    throw new Error("Erreur lors de la récupération de l'historique (HTTP " + res.status + ")");
+  }
+  //  Filtre des résultats pour ne garder que ceux en statut "confirmed"
+  const data = await res.json();
+  if (data.data && Array.isArray(data.data.tickets)) {
+      const confirmedTickets = data.data.tickets.filter(
+          (ticket: any) => ticket.status === "confirmed"
+      );
+      return confirmedTickets.map((ticket: any) => ({
+        id: ticket.id, 
+        match: ticket.match,
+        category: ticket.category,
+        price: ticket.price,
+      }));
+  }
+  return [];
+    //return res.json();
+  }

@@ -15,14 +15,8 @@ export interface AuthState {
     setIsAuthenticated: (status: boolean) => void;
 }
 
-// État initial 
-const initialUser: User = { 
-    firstname: "", lastname: "", email: "", password: "", 
-    birthDate: new Date(), ticketCount: 0 
-}; 
-
 export const initialAuthState: AuthState = {
-    user: initialUser,
+    user:null,
     isAuthenticated: false,
     loading: true,
     error: null,
@@ -33,7 +27,7 @@ export const initialAuthState: AuthState = {
 
 export const AuthContext = createContext<AuthState>(initialAuthState);
 export const AuthProvider = ({ children }: { children: ReactNode }) => {
-    const [user, setUser] = useState<User | null>(initialAuthState.user);
+    const [user, setUser] = useState<User | null>(null);
     const [isAuthenticated, setIsAuthenticated] = useState<boolean>(initialAuthState.isAuthenticated);
     const [loading, setLoading] = useState<boolean>(initialAuthState.loading);
     const [error, setError] = useState<string | null>(initialAuthState.error);
@@ -47,7 +41,7 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
             setUser(profil);
             setIsAuthenticated(true);
         } catch (err) {
-            setUser(initialAuthState.user); // Réinitialiser l'utilisateur en cas d'échec
+            setUser(null); // Réinitialiser l'utilisateur en cas d'échec
             setIsAuthenticated(false);
             // setError(err.message); // Laisser l'erreur silencieuse si c'est juste non connecté
         } finally {

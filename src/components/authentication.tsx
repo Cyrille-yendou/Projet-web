@@ -4,7 +4,7 @@ import {  signInPOST, signOut, signUp } from "../serviceAPI/authenticator";
 import type { User } from "../types/user";
 import { dateFormatDDMMYYYY } from "./toolBox";
 import { useAuth } from "../hook/useAuth";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 
 const style = {
     position: 'absolute',
@@ -17,9 +17,8 @@ const style = {
     boxShadow: 24,
     p: 4,
 };
-
-
 export default function Authentification() {
+    const navigate = useNavigate();
     const { 
         user, 
         isAuthenticated, 
@@ -52,13 +51,13 @@ export default function Authentification() {
             email: data.get("email"),
             password: data.get("password"),
             birthDate: data.get("birthDate"),
-            ticketCount: data.get("ticketCount")
+            
         }
         signUp(buffer)
             .then(async res => {   
                 if (res) {
                     setIsAuthenticated(true);
-                    setUser(buffer); // récupère le profil
+                    await checkAuth(); // récupère le profil
                 }
             })
             .catch((err) => setError(err.message))
@@ -69,9 +68,10 @@ export default function Authentification() {
         setLoading(true);
         signOut()
             .then(res => {
-                if (!res) {    // si deco, clear les variables
+                if (res) {    // si deco, clear les variables
                     setIsAuthenticated(false);
                     setUser(null); // Clear l'utilisateur (sera mis à initialUser par le Provider)
+                    navigate("/", { replace: true });
                 } else {
                     setError("Déconnexion API échouée.");
                 }
