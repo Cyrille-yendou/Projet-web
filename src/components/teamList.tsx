@@ -202,6 +202,14 @@ export default function TeamList() {
                   {t.name}
                 </Typography>
               </Box>
+              <Box sx={{ mt: 1 }}>
+                <Typography variant="body2" fontWeight="medium">
+                  Continent : {t.continent}
+                </Typography>
+                <Typography variant="body2" fontWeight="medium">
+                Confédération : {t.confederation}
+              </Typography>
+              </Box>
             </CardContent>
           </Card>
         ))}
