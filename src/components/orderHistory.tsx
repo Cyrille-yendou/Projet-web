@@ -1,7 +1,7 @@
 
 import { useEffect, useState } from 'react';
 import { useAuth } from '../hook/useAuth'; 
-import { getPaidTickets } from '../serviceAPI/dataRetriever'; 
+import { getPaidTickets } from '../serviceAPI/ticketAPI'; 
 import { Link } from 'react-router-dom';
 
 interface PaidTicket {

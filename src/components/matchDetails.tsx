@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react";
 import { useNavigate, useParams } from "react-router";
-import { getAvailabilityByMatchId, getMatchById, addTicket, getTicket} from "../serviceAPI/dataRetriever";
+import { getAvailabilityByMatchId, getMatchById } from "../serviceAPI/dataRetriever";
+import {addTicket, getTicket} from "..//serviceAPI/ticketAPI"
 import type { Match } from "../types/match";
 import type { Availability } from "../types/availability";
 import { dateFormatDDMMYYYY, timeFormatHHMM } from "./toolBox";

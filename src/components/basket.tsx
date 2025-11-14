@@ -1,8 +1,8 @@
 import { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
-import {  removeFromTicket, payPending} from "../serviceAPI/dataRetriever";
+import {  removeFromTicket, payPending} from "../serviceAPI/ticketAPI";
 import { useGlobalCart } from "../hook/useGlobalTicket";
-import ModalConfirm from "./modalConfirm";
+import ModalConfirm from "../context/modalConfirm";
 
 export default function Panier() {
  const { 

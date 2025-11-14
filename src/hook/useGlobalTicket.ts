@@ -1,7 +1,7 @@
 
 import { useContext, useCallback } from 'react'; 
 import { CartContext } from '../context/cartContext';
-import { getPendingTickets } from '../serviceAPI/dataRetriever'; 
+import { getPendingTickets } from '../serviceAPI/ticketAPI'; 
 
 export const useGlobalCart = () => {
   const { state, dispatch } = useContext(CartContext);

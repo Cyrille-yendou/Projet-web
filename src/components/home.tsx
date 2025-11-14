@@ -4,10 +4,10 @@ import { Box, Typography, Toolbar, CssBaseline } from "@mui/material";
 import MatchList from "./matchList";
 import MatchDetails from "./matchDetails";
 import NavigationBar from "./navigationBar";
-import Panier from "./panier";
+import Panier from "./basket";
 import TicketsList from "./tickets"
 import Authentification from "./authentication";
-import HistoriqueCommandes from "./historiqueCommandes";
+import HistoriqueCommandes from "./orderHistory";
 import GroupList from "./groupList";
 import TeamList from "./teamList";
 
