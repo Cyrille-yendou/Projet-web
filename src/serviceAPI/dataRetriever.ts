@@ -5,7 +5,7 @@ import type { Group } from "../types/group";
 import type { Availability } from "../types/availability";
 
 
-const API_REST  = "https://worldcup2026.shrp.dev"; 
+const API_REST : string = import.meta.env.VITE_API_URL;
 
 // Récupérer tous les matchs
 export async function getMatches(): Promise<Match[]> {

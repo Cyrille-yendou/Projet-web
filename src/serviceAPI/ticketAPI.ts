@@ -1,5 +1,6 @@
 import type { User } from "../types/user";
-const API_REST  = "https://worldcup2026.shrp.dev"; 
+
+const API_REST : string = import.meta.env.VITE_API_URL; 
 
 /* ----------------------- PANIER ----------------------- */
 

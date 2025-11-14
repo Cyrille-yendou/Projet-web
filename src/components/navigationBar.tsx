@@ -135,21 +135,6 @@ export default function NavigationBar(props: Props) {
             Groupes
           </Button>
 
-          <Button
-            color="inherit"
-            variant="contained"
-            size="medium"
-            onClick={() => navigate('/tickets')}
-            sx={{
-              backgroundColor: 'rgba(255, 255, 255, 0.2)',
-              '&:hover': {
-                backgroundColor: '#6FB8D8',
-              },
-            }}
-          >
-            Tickets
-          </Button>
-
           {/*on space pour avoir les icônes tout à droite, là où c'est plus logique */}
           <Box sx={{ flexGrow: 1 }} />
 
@@ -187,4 +172,21 @@ export default function NavigationBar(props: Props) {
       </AppBar>
     </ElevationScroll>
   );
+  /* 
+  // !!! bouton à rajouter pour acceder à liste de tickets du compte, uniquement pour debug 
+  <Button
+    color="inherit"
+    variant="contained"
+    size="medium"
+    onClick={() => navigate('/tickets')}
+    sx={{
+      backgroundColor: 'rgba(255, 255, 255, 0.2)',
+      '&:hover': {
+        backgroundColor: '#6FB8D8',
+      },
+    }}
+  >
+    Tickets
+  </Button>
+  */
 }

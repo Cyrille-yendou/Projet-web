@@ -1,7 +1,7 @@
 import type { Ticket, TicketResponse } from "../types/ticket";
 import { useEffect, useState } from "react";
 import { getTicket, validateTicket } from "../serviceAPI/ticketAPI"; 
-import { dateFormatDDMMYYYY, timeFormatHHMM } from "./toolBox";
+import { dateFormatDDMMYYYY, timeFormatHHMM } from "../context/toolBox";
 import ModalConfirm from "../context/modalConfirm";
 
 export default function TicketsList() {

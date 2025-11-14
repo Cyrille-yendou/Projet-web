@@ -4,7 +4,7 @@ import { getAvailabilityByMatchId, getMatchById } from "../serviceAPI/dataRetrie
 import {addTicket, getTicket} from "..//serviceAPI/ticketAPI"
 import type { Match } from "../types/match";
 import type { Availability } from "../types/availability";
-import { dateFormatDDMMYYYY, timeFormatHHMM } from "./toolBox";
+import { dateFormatDDMMYYYY, timeFormatHHMM } from "../context/toolBox";
 import { Link } from "react-router";
 import {
   Box,
@@ -16,7 +16,6 @@ import {
   TextField,
   Divider,
   Container,
-  Grid,
   Paper,
 } from "@mui/material";
 import { Stadium, CalendarToday } from "@mui/icons-material";
@@ -109,7 +108,7 @@ export default function MatchDetails() {
     }
 
     try {
-      const res = await addTicket( matchId, category, quantity);
+      await addTicket( matchId, category, quantity);
       alert(`${quantity} ticket(s) ajouté(s) au panier avec succès !`);
       //debug
       //console.log("Billets ajoutés au panier avec succès !");

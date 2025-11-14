@@ -5,7 +5,6 @@ import MatchList from "./matchList";
 import MatchDetails from "./matchDetails";
 import NavigationBar from "./navigationBar";
 import Panier from "./basket";
-import TicketsList from "./tickets"
 import Authentification from "./authentication";
 import HistoriqueCommandes from "./orderHistory";
 import GroupList from "./groupList";
@@ -135,14 +134,13 @@ export default function Home() {
           <Route path="matches" element={<MatchList/>} />
           <Route path="matches/:matchId" element={<MatchDetails/>} />
           <Route path="/tickets/pending" element={<Panier/>} /> 
-          <Route path="/tickets" element={<TicketsList/>} /> 
           <Route path="/authentification" element={<Authentification/>}/>
           <Route path="/historique" element={<HistoriqueCommandes/>}/>
-          <Route path="/tickets" element={<TicketsList/>} />
           <Route path="/groups" element={<GroupList/>} />
           <Route path="/teams" element={<TeamList/>} />
         </Routes>
       </Box>
     </Box>
   );
+  //<Route path="/tickets" element={<TicketsList/>} /> si besoin de l'onglet ticket
 }

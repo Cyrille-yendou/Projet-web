@@ -4,7 +4,7 @@ import type { Match } from "../types/match";
 import type { Team } from "../types/team";
 import type { Group } from "../types/group";
 import { Link } from "react-router-dom";
-import { dateFormatDDMMYYYY, timeFormatHHMM } from "./toolBox";
+import { dateFormatDDMMYYYY, timeFormatHHMM } from "../context/toolBox";
 import {
   Card,
   CardContent,
@@ -19,7 +19,6 @@ import {
   Container,
   CircularProgress,
   Alert,
-  Input,
 } from "@mui/material";
 import { Stadium, CalendarToday, AccessTime } from "@mui/icons-material";
 
