@@ -50,13 +50,13 @@ export default function HistoriqueCommandes() {
     }
     
     if (error) {
-        return <p className="text-center text-red-500 mt-10">❌ {error}</p>;
+        return <p className="text-center text-red-500 mt-10">{error}</p>;
     }
 
     if (!isAuthenticated) {
         return (
             <div className="text-center mt-10 p-4 bg-yellow-100 rounded-lg max-w-md mx-auto">
-                <p className="font-semibold">🔒 Authentification requise</p>
+                <p className="font-semibold">Authentification requise</p>
                 <p>Veuillez vous connecter pour consulter votre historique de commandes.</p>
                 <Link to="/authentification" className="text-blue-600 hover:underline"> Me connecter </Link>
             </div>
@@ -65,7 +65,7 @@ export default function HistoriqueCommandes() {
     if (history.length === 0) {
         return (
             <div className="text-center mt-10">
-                <p>Vous n'avez pas encore de commandes passées. 🎫</p>
+                <p>Vous n'avez pas encore de commandes passées.</p>
                 <Link to="/matches" className="text-blue-600 hover:underline">
                     Retour aux matchs
                 </Link>
@@ -77,7 +77,7 @@ export default function HistoriqueCommandes() {
 
     return (
         <div className="max-w-5xl mx-auto mt-10 p-6">
-            <h2 className="text-3xl font-bold mb-8 text-center">🧾 Historique des Commandes</h2>
+            <h2 className="text-3xl font-bold mb-8 text-center">Historique des Commandes</h2>
             
             <div className="space-y-6">
                 {history.map((ticket) => (

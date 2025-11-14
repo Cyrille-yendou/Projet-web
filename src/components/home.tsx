@@ -17,7 +17,6 @@ import football2 from "../assets/images/football2.jpg";
 import football3 from "../assets/images/football3.png";
 
 
-
 const IMAGES = [football1, football2, football3];
 const ROTATION_INTERVAL = 4000; // 4 secondes
 

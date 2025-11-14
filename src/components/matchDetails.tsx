@@ -42,7 +42,7 @@ export default function MatchDetails() {
   const handleChangeQuantity = (category: string, newQuantity: number) => {
     const value = Number(newQuantity);
 
-    // Vérification de NaN et conversion en entier
+    //Vérification de NaN et conversion en entier
     if (isNaN(value)) {
       return;
     }
@@ -85,7 +85,7 @@ export default function MatchDetails() {
   if (loading) return <p>Chargement...</p>;
   if (error) return <p>Erreur : {error}</p>;
 
-  // Le 'match' et 'availability' sont garantis non-null ici après les vérifications
+  //Le 'match' et 'availability' sont garantis non-null ici après les vérifications
   if (!match || !availability || !availability.categories) {
     return <p>Impossible d'afficher les détails du match : données manquantes ou structure invalide.</p>;
   }
