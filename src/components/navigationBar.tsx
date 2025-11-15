@@ -56,9 +56,13 @@ export default function NavigationBar(props: Props) {
     birthDate: new Date(), 
   });
 
-  const handleClick = () => {
+  const handleClickT = () => {
     navigate("/tickets/pending");
   };
+
+  const handleClickAuth = () => {
+    navigate("/auth")
+  }
 
   useEffect(() => {
     if (!isConnected) { // si on est pas déjà co avec des variables (=refresh page)
@@ -139,15 +143,15 @@ export default function NavigationBar(props: Props) {
           <Box sx={{ flexGrow: 1 }} />
 
           {/*attribut badgeContent pour afficher le contenu du panier !! */}
-          <IconButton onClick={handleClick}>
+          <IconButton onClick={handleClickT}>
             <ShoppingCartIcon fontSize="medium" />
             <CartBadge color="primary" overlap="circular" /> 
             <Link to={'/tickets/pending'}></Link>
           </IconButton>
 
-          <IconButton onClick={handleModal}>
+          <IconButton onClick={handleClickAuth}>
             <PersonIcon fontSize="medium" />
-            <CartBadge color="primary" overlap="circular" />
+            <Link to={'/auth'}></Link>
           </IconButton>
 
           <Modal open={modal} onClose={handleModal} 

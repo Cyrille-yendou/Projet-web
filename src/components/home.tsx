@@ -134,7 +134,7 @@ export default function Home() {
           <Route path="matches" element={<MatchList/>} />
           <Route path="matches/:matchId" element={<MatchDetails/>} />
           <Route path="/tickets/pending" element={<Panier/>} /> 
-          <Route path="/authentification" element={<Authentification/>}/>
+          <Route path="/auth" element={<Authentification/>}/>
           <Route path="/historique" element={<HistoriqueCommandes/>}/>
           <Route path="/groups" element={<GroupList/>} />
           <Route path="/teams" element={<TeamList/>} />
