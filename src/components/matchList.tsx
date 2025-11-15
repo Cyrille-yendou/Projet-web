@@ -102,7 +102,7 @@ export default function MatchList() {
 
   if (error)
     return (
-      <Container sx={{ mt: 4 }}>
+      <Container sx={{ mt: 4, fontFamily: "Montserrat, sans-serif" }}>
         <Alert severity="error">Erreur : {error}</Alert>
       </Container>
     );
@@ -114,6 +114,7 @@ export default function MatchList() {
         width: "100%",
         px: "4vw",
         overflowX: "hidden",
+        fontFamily: "Montserrat, sans-serif",
       }}
     >
       <Typography

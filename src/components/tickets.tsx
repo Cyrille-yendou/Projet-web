@@ -31,6 +31,14 @@ export default function TicketsList() {
     fetchTickets();
   }, []);
 
+    //comme sur teamList, on évite le scroll horizontal (présent sur toutes les pages)
+    useEffect(() => {
+      document.body.style.overflowX = "hidden";
+      return () => {
+        document.body.style.overflowX = "auto";
+      };
+    }, []);
+
   if (loading) return <p className="text-center mt-10">Chargement des tickets...</p>;
   if (error) return <p className="text-center text-red-500 mt-10">{error}</p>;
   if (!ticketsData || !ticketsData.counts || !ticketsData.grouped) return <p>Aucun ticket trouvé.</p>;

@@ -1,3 +1,13 @@
+import {
+    Container,
+    Typography,
+    Box,
+    Card,
+    CardContent,
+    CircularProgress,
+    Alert,
+    Button,
+} from "@mui/material";
 
 import { useEffect, useState } from 'react';
 import { useAuth } from '../hook/useAuth'; 
@@ -7,6 +17,7 @@ import { Link } from 'react-router-dom';
 interface PaidTicket {
     id: string;
     match: {
+        id:number
         homeTeam: { name: string };
         awayTeam: { name: string };
     };
@@ -45,62 +56,146 @@ export default function HistoriqueCommandes() {
         fetchHistory();
     }, [isAuthenticated, authLoading]); 
 
-    if (authLoading || loading) {
-        return <p className="text-center mt-10">Chargement de l'historique...</p>;
-    }
-    
-    if (error) {
-        return <p className="text-center text-red-500 mt-10">{error}</p>;
-    }
+      //comme sur teamList, on évite le scroll horizontal (présent sur toutes les pages)
+      useEffect(() => {
+        document.body.style.overflowX = "hidden";
+        return () => {
+          document.body.style.overflowX = "auto";
+        };
+      }, []);
 
-    if (!isAuthenticated) {
-        return (
-            <div className="text-center mt-10 p-4 bg-yellow-100 rounded-lg max-w-md mx-auto">
-                <p className="font-semibold">Authentification requise</p>
-                <p>Veuillez vous connecter pour consulter votre historique de commandes.</p>
-                <Link to="/authentification" className="text-blue-600 hover:underline"> Me connecter </Link>
-            </div>
-        );
-    }
-    if (history.length === 0) {
-        return (
-            <div className="text-center mt-10">
-                <p>Vous n'avez pas encore de commandes passées.</p>
-                <Link to="/matches" className="text-blue-600 hover:underline">
-                    Retour aux matchs
-                </Link>
-            </div>
-        );
-    }
 
-    // --- Affichage de l'historique ---
-
+if (authLoading || loading) {
     return (
-        <div className="max-w-5xl mx-auto mt-10 p-6">
-            <h2 className="text-3xl font-bold mb-8 text-center">Historique des Commandes</h2>
-            
-            <div className="space-y-6">
-                {history.map((ticket) => (
-                    <div 
-                        key={ticket.id} 
-                        className="p-4 border border-green-200 bg-white shadow-lg rounded-xl flex justify-between items-center transition hover:shadow-xl"
-                    >
-                        <div>
-                            <p className="text-lg font-bold text-gray-800">
-                                Match : {ticket.match?.homeTeam} vs {ticket.match?.awayTeam}
-                            </p>
-                            
-                            <p className="text-sm text-gray-600 mt-1">
-                                Catégorie : <span className="font-medium">{ticket.category.replace("CATEGORY_", "")}</span>
-                            </p>
-                        </div>
-                        <div className="text-right">
-                            <p className="text-xl font-extrabold text-green-700">{ticket.price.toFixed(2)} €</p>
-                            <span className="text-sm text-green-500 font-semibold">Payé</span>
-                        </div>
-                    </div>
-                ))}
-            </div>
-        </div>
+        <Container sx={{ textAlign: "center", mt: 6, fontFamily: "Montserrat, sans-serif" }}>
+            <CircularProgress />
+            <Typography mt={2}>Chargement de l'historique...</Typography>
+        </Container>
     );
+}
+
+if (error) {
+    return (
+        <Container sx={{ mt: 6, fontFamily: "Montserrat, sans-serif" }}>
+            <Alert severity="error" sx={{ maxWidth: 500, mx: "auto" }}>
+                {error}
+            </Alert>
+        </Container>
+    );
+}
+
+if (!isAuthenticated) {
+    return (
+        <Container sx={{ mt: 6, maxWidth: 500, fontFamily: "Montserrat, sans-serif" }}>
+            <Alert severity="warning" sx={{ mb: 2 }}>
+                Authentification requise
+            </Alert>
+
+            <Typography textAlign="center" mb={2} sx={{fontFamily: "Montserrat, sans-serif"}}>
+                Veuillez vous connecter pour consulter votre historique de commandes.
+            </Typography>
+
+            <Button
+                component={Link}
+                to="/authentification"
+                variant="contained"
+                fullWidth
+                sx={{fontFamily: "Montserrat, sans-serif"}}
+            >
+                Me connecter
+            </Button>
+        </Container>
+    );
+}
+
+if (history.length === 0) {
+    return (
+        <Container sx={{ mt: 6, maxWidth: 500, textAlign: "center", fontFamily: "Montserrat, sans-serif" }}>
+            <Typography variant="h6" gutterBottom>
+                Vous n'avez pas encore de commandes passées
+            </Typography>
+
+            <Button
+                component={Link}
+                to="/matches"
+                variant="contained"
+                color="primary"
+                sx={{
+                    mt: 2,
+                    color: "white",
+                    fontFamily: "Montserrat, sans-serif",
+                    backgroundColor: "primary.main",
+                    "&:hover": {
+                        backgroundColor: "primary.dark",
+                    },
+                }}
+            >
+                Retour aux matchs
+            </Button>
+        </Container>
+    );
+}
+
+//sinon affichage de l'historique des commandes
+return (
+    <Container sx={{ mt: 6, mb: 6, fontFamily: "Montserrat, sans-serif" }}>
+        <Typography
+            variant="h4"
+            textAlign="center"
+            fontWeight="bold"
+            gutterBottom
+        >
+            Historique des Commandes
+        </Typography>
+
+        <Box
+            sx={{
+                display: "grid",
+                gridTemplateColumns: "repeat(auto-fit, minmax(380px, 1fr))",
+                gap: 3,
+                mt: 4,
+            }}
+        >
+            {history.map((ticket) => (
+                <Card
+                    key={ticket.id}
+                    sx={{
+                        borderRadius: 3,
+                        boxShadow: 3,
+                        transition: "0.2s",
+                    }}
+                >
+                    <CardContent sx={{ p: 3 }}>
+                        <Typography variant="h6" fontWeight="bold">
+                            Match n°{ticket.match.id}
+                        </Typography>
+
+                        <Typography
+                            variant="body2"
+                            color="text.secondary"
+                            sx={{ mt: 1 }}
+                        >
+                            Catégorie :
+                            <b> {ticket.category.replace("CATEGORY_", "")}</b>
+                        </Typography>
+
+                        <Box sx={{ textAlign: "right", mt: 2 }}>
+                            <Typography
+                                variant="h5"
+                                fontWeight="bold"
+                                color="green"
+                            >
+                                {ticket.price.toFixed(2)} €
+                            </Typography>
+
+                            <Typography variant="body2" color="green">
+                                Payé
+                            </Typography>
+                        </Box>
+                    </CardContent>
+                </Card>
+            ))}
+        </Box>
+    </Container>
+)
 }

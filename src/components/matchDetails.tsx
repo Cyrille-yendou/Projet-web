@@ -81,6 +81,14 @@ export default function MatchDetails() {
     return () => controller.abort();
   }, [matchId]); 
 
+    //comme sur teamList, on évite le scroll horizontal (présent sur toutes les pages)
+    useEffect(() => {
+      document.body.style.overflowX = "hidden";
+      return () => {
+        document.body.style.overflowX = "auto";
+      };
+    }, []);
+
   if (loading) return <p>Chargement...</p>;
   if (error) return <p>Erreur : {error}</p>;
 
@@ -136,7 +144,7 @@ return (
         bgcolor: "white",
       }}
     >
-      {/* Bandeau titre bleu */}
+      {/*bandeau titre bleu */}
       <Box
         sx={{
           bgcolor: "rgba(4, 86, 148, 0.9)",
@@ -258,21 +266,20 @@ return (
                 </Box>
 
                 {cat.available && (
-                  <Box sx={{ display: "flex", alignItems: "center", gap: 2 }}>
+                  <Box sx={{ display: "flex", alignItems: "center", gap: 2, flexWrap: "wrap" }}>
                     <TextField
                       type="number"
                       size="small"
                       label="Quantité"
                       value={qty}
-                      onChange={(e) =>
-                        handleChangeQuantity(key, Number(e.target.value))
-                      }
+                      onChange={(e) => handleChangeQuantity(key, Number(e.target.value))}
                       sx={{ width: 80 }}
                     />
                     <Button
                       variant="contained"
                       sx={{
                         backgroundColor: "rgba(4, 86, 148, 0.8)",
+                        minWidth: 160,
                         "&:hover": {
                           backgroundColor: "rgba(4, 86, 148, 1)",
                         },
@@ -295,14 +302,14 @@ return (
           <Button
             variant="outlined"
             component={Link}
+            color="primary"
             to="/tickets/pending"
             sx={{
-              borderColor: "rgba(4, 86, 148, 0.9)",
-              color: "rgba(4, 86, 148, 0.9)",
+              backgroundColor: "rgba(4, 86, 148, 0.9)",
+              color: "white",
               fontWeight: "bold",
               "&:hover": {
-                borderColor: "rgba(4, 86, 148, 1)",
-                color: "rgba(4, 86, 148, 1)",
+                backgroundColor: "rgba(4, 86, 148, 1)",
               },
             }}
           >

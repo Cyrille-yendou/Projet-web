@@ -48,7 +48,7 @@ export default function TeamList() {
 
   if (error)
     return (
-      <Container sx={{ mt: 4 }}>
+      <Container sx={{ mt: 4, fontFamily: "Montserrat, sans-serif" }}>
         <Alert severity="error">Erreur : {error}</Alert>
       </Container>
     );

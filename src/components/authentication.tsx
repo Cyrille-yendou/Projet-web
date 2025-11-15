@@ -11,8 +11,8 @@ import {
     Divider 
 } from "@mui/material";
 
-import { useState } from "react";
-import {  signInPOST, signOut, signUp } from "../serviceAPI/authenticator";
+import { useState, useEffect } from "react";
+import { signInPOST, signOut, signUp } from "../serviceAPI/authenticator";
 import type { User } from "../types/user";
 import { dateFormatDDMMYYYY } from "../context/toolBox";
 import { useAuth } from "../hook/useAuth";
@@ -29,6 +29,14 @@ export default function Authentification() {
     } = useAuth();
     const [loading, setLoading] = useState<boolean>(false);
     const [error, setError] = useState<string | null>(null);
+
+      //comme sur teamList, on évite le scroll horizontal (présent sur toutes les pages)
+      useEffect(() => {
+        document.body.style.overflowX = "hidden";
+        return () => {
+          document.body.style.overflowX = "auto";
+        };
+      }, []);
 
     async function signingIn(data) {
         setLoading(true);
@@ -89,22 +97,18 @@ export default function Authentification() {
             </Container>
         );
 
-    if (isAuthenticated) //Si l'utilisateur est connecté, on affiche son profil (avec possibilité de consulter les commandes passées)
+    if (isAuthenticated) //si l'utilisateur est connecté, on affiche son profil (avec possibilité de consulter les commandes passées)
         return (
             <Container
-            sx={{ mt: 6, backgroundColor: "white !important" }}
+            sx={{ mt: 6, backgroundColor: "white !important", fontFamily: "Montserrat, sans-serif" }}
             maxWidth="md"
             >
                 <Card
-                style={{ backgroundColor: "white" }} //Forcer le fond blanc (priorité la + elevée)
                 sx={{
                     p: 3,
                     borderRadius: 2,
                     boxShadow: 2,
                     backgroundColor: "white !important",
-                    "& .MuiCardContent-root": {
-                        backgroundColor: "white !important"
-                    }
                 }}
                 >
                     <CardContent>
@@ -134,7 +138,13 @@ export default function Authentification() {
                                     fullWidth
                                     size="small"
                                     color="primary"
-                                    sx={{ mb: 3 }}
+                                    sx={{ mb: 3,
+                                        color: "white",
+                                        backgroundColor: "primary.main",
+                                        "&:hover" : {
+                                            backgroundColor: "primary.dark"
+                                        }
+                                     }}
                                 >
                                     Consulter mes commandes
                                 </Button>
@@ -156,23 +166,19 @@ export default function Authentification() {
             </Container>
         );
 
-    // Affichage du form de connexion ou inscription (si pas connecté)
+    //affichage du form de connexion ou inscription (si pas connecté)
     return (
         <Container
-            sx={{ mt: 6, backgroundColor: "transparent !important" }}
+            sx={{ mt: 6, backgroundColor: "transparent !important", fontFamily: "Montserrat, sans-serif" }}
             maxWidth="md"
             >
             <Card
-            style={{ backgroundColor: "white" }} //Pareil
             sx={{
                 p: 3,
                 borderRadius: 2,
                 boxShadow: 2,
                 backgroundColor: "white !important",
-                "& .MuiCardContent-root": {
-                    backgroundColor: "white !important"
-                }
-            }}
+                }}
             >
                 <CardContent>
                     {error && (
@@ -195,13 +201,12 @@ export default function Authentification() {
                             </Typography>
                             <Box
                                 component="form"
-                                //demande à priscille si ça dérange de changer par user
                                 onSubmit={(e) => { //"remplace" le action=signingUp dans le form (en gros ça mettait Bad Request avant parce que le form était pas bien transmis) 
                                     e.preventDefault();
                                     const data = new FormData(e.currentTarget); //on récupère les données
-                                    //const user = Object.fromEntries(data.entries()); //on crée l'objet utilisateur à partir des données du form
                                     //console.log([...data.entries()]); //debug
-                                    signingUp(data); //comme ça, on peut directement appeler la fonction, qui prend en param un user
+                                    //console.log("birthDate =", data.get("birthDate")); //debug : voir si c'est pas le format de la date qui posait un souci
+                                    signingUp(data); 
                                 }}
                             >
                                 <TextField
@@ -210,7 +215,7 @@ export default function Authentification() {
                                     name="firstname"
                                     required
                                     size="small"
-                                    sx={{ mb: 3, "& .MuiInputBase-root": { backgroundColor: "white" } }}
+                                    sx={{ mb: 3, }}
                                 />
                                 <TextField
                                     fullWidth
@@ -218,7 +223,7 @@ export default function Authentification() {
                                     name="lastname"
                                     required
                                     size="small"
-                                    sx={{ mb: 3, "& .MuiInputBase-root": { backgroundColor: "white" } }}
+                                    sx={{ mb: 3, }}
                                 />
                                 <TextField
                                     fullWidth
@@ -227,7 +232,7 @@ export default function Authentification() {
                                     name="email"
                                     required
                                     size="small"
-                                    sx={{ mb: 3, "& .MuiInputBase-root": { backgroundColor: "white" } }}
+                                    sx={{ mb: 3, }}
                                 />
                                 <TextField
                                     fullWidth
@@ -236,7 +241,7 @@ export default function Authentification() {
                                     name="password"
                                     required
                                     size="small"
-                                    sx={{ mb: 3, "& .MuiInputBase-root": { backgroundColor: "white" } }}
+                                    sx={{ mb: 3, }}
                                 />
                                 <TextField
                                     fullWidth
@@ -246,7 +251,8 @@ export default function Authentification() {
                                     InputLabelProps={{ shrink: true }}
                                     required
                                     size="small"
-                                    sx={{ mb: 3, "& .MuiInputBase-root": { backgroundColor: "white" } }}
+                                    inputProps={{ max: new Date().toISOString().split("T")[0] }} //éviter de mettre des dates futures, l'API apprécie pas
+                                    sx={{ mb: 3, }}
                                 />
                                 <Button fullWidth variant="contained" size="small" type="submit">
                                     S'inscrire
@@ -273,7 +279,7 @@ export default function Authentification() {
                                     name="email"
                                     required
                                     size="small"
-                                    sx={{ mb: 3, "& .MuiInputBase-root": { backgroundColor: "white" } }}
+                                    sx={{ mb: 3, }}
                                 />
                                 <TextField
                                     fullWidth
@@ -282,7 +288,7 @@ export default function Authentification() {
                                     name="password"
                                     required
                                     size="small"
-                                    sx={{ mb: 3, "& .MuiInputBase-root": { backgroundColor: "white" } }}
+                                    sx={{ mb: 3, }}
                                 />
                                 <Button fullWidth variant="contained" size="small" type="submit">
                                     Se connecter

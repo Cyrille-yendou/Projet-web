@@ -40,6 +40,7 @@ export async function signInGET(): Promise<User> {
 // Création de compte
 export async function signUp(user: User): Promise<boolean> {
   console.log("Appel API - signUp() "+user.password);
+  console.log("Payload envoyé:", JSON.stringify(user));
   const res = await fetch(`${API_REST}/auth/signup`, {
     method: "POST",
     credentials: "include",

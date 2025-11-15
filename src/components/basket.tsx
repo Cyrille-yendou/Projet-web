@@ -1,169 +1,262 @@
+import {
+  Container,
+  Typography,
+  Box,
+  Card,
+  CardContent,
+  Button,
+  Chip,
+  Alert,
+  CircularProgress,
+} from "@mui/material";
+
 import { useEffect, useState } from "react";
-import { Link } from "react-router-dom";
-import {  removeFromTicket, payPending} from "../serviceAPI/ticketAPI";
+import { useNavigate } from "react-router-dom";
+import { removeFromTicket, payPending } from "../serviceAPI/ticketAPI";
 import { useGlobalCart } from "../hook/useGlobalTicket";
+import { useAuth } from "../hook/useAuth";
 import ModalConfirm from "../context/modalConfirm";
 
 export default function Panier() {
- const { 
-    tickets, 
-    loading, 
-    error, 
-    totalAmount, 
-    fetchCart, 
-  } = useGlobalCart();
+  const { isAuthenticated, loading: authLoading } = useAuth();
+  const { tickets, loading, error, totalAmount, fetchCart } = useGlobalCart();
 
   const [modalType, setModalType] = useState<"delete" | "pay" | null>(null);
   const [selectedTicketId, setSelectedTicketId] = useState<string | null>(null);
-  const [message, setMessage] = useState<string | null>(null); 
+  const [message, setMessage] = useState<{ text: string; type: "success" | "error" } | null>(null);
 
+  const navigate = useNavigate();
+
+  //on charge le panier que si l'utilisateur est connecté
   useEffect(() => {
-    fetchCart(); 
-  }, [fetchCart]); 
-
-  // Supprimer un ticket 
-  const handleRemove = async (ticketId: string) => {
-    setMessage(null); 
-    try {
-      await removeFromTicket(ticketId); 
-      await fetchCart();
-      setMessage("Ticket retiré du panier.");
-    } catch (err) {
-      setMessage("Erreur lors de la suppression du ticket.");
+    if (authLoading) return;
+    if (isAuthenticated) {
+      fetchCart();
     }
-    setModalType(null); 
+  }, [authLoading, isAuthenticated, fetchCart]);
+
+  // Comme sur teamList, on évite le scroll horizontal
+  useEffect(() => {
+    document.body.style.overflowX = "hidden";
+    return () => {
+      document.body.style.overflowX = "auto";
+    };
+  }, []);
+
+  const handleRemove = async (ticketId: string) => {
+    setMessage(null);
+    try {
+      await removeFromTicket(ticketId);
+      await fetchCart();
+      setMessage({ text: "Ticket retiré du panier.", type: "success" });
+    } catch (err) {
+      setMessage({ text: "Erreur lors de la suppression du ticket.", type: "error" });
+    }
+    setModalType(null);
     setSelectedTicketId(null);
-     
   };
 
-//  Paiement
   const handlePay = async () => {
     setMessage(null);
-    setModalType(null); 
-    
+    setModalType(null);
+
     if (totalAmount === 0 || tickets.length === 0) {
-        setMessage("Le panier est vide !");
-        return;
+      setMessage({ text: "Le panier est vide !", type: "error" });
+      return;
     }
     try {
-      await payPending(); 
-      await fetchCart(); 
-      setMessage(`Paiement de ${totalAmount.toFixed(2)} € effectué avec succès ! Vos tickets sont confirmés.`);
-    } catch (err) {
-      setMessage("Erreur lors du paiement. Veuillez réessayer.");
+      await payPending();
+      await fetchCart();
+      setMessage({
+        text: `Paiement de ${totalAmount.toFixed(2)} € effectué avec succès ! Vos tickets sont confirmés.`,
+        type: "success",
+      });
+    } catch (err: any) {
+      setMessage({
+        text: err?.message || "Erreur lors du paiement. Veuillez réessayer.",
+        type: "error",
+      });
     }
   };
 
+  //affichage si auth charge encore
+  if (authLoading || loading) {
+    return (
+      <Container sx={{ textAlign: "center", mt: 6, fontFamily: "Montserrat, sans-serif" }}>
+        <CircularProgress />
+        <Typography mt={2}>Chargement du panier...</Typography>
+      </Container>
+    );
+  }
 
-  if (loading)
-    return <p className="text-center mt-10">Chargement du panier...</p>;
-  if (error) return <p className="text-center text-red-500 mt-10">{error}</p>;
+  //si on a un utilisateur pas connecté
+  if (!isAuthenticated) {
+    return (
+      <Container sx={{ mt: 6, fontFamily: "Montserrat, sans-serif" }}>
+        <Alert severity="warning" sx={{ mb: 2 }}>
+          Authentification requise
+        </Alert>
+        <Typography textAlign="center" mb={2}>
+          Veuillez vous connecter pour consulter votre panier.
+        </Typography>
+        <Button
+          variant="contained"
+          color="primary"
+          onClick={() => navigate("/auth")}
+        >
+          Se connecter
+        </Button>
+      </Container>
+    );
+  }
 
+  if (error) {
+    return (
+      <Container sx={{ mt: 6, fontFamily: "Montserrat, sans-serif" }}>
+        <Alert severity="error" sx={{ maxWidth: 500, mx: "auto" }}>
+          {error}
+        </Alert>
+      </Container>
+    );
+  }
+
+  //l'affichage si le panier est vide
+  if (tickets.length === 0) {
+    return (
+      <Container sx={{ mt: 6, maxWidth: 500, textAlign: "center", fontFamily: "Montserrat, sans-serif" }}>
+        <Typography variant="h6" gutterBottom>
+          Votre panier est vide
+        </Typography>
+        <Button
+          variant="contained"
+          color="primary"
+          sx={{ mt: 2 }}
+          onClick={() => navigate("/matches")}
+        >
+          Retour aux matchs
+        </Button>
+      </Container>
+    );
+  }
+
+  //affichage panier si on est connecté
   return (
-    <div className="max-w-5xl mx-auto mt-10 p-6">
-      <h2 className="text-2xl font-bold mb-6 text-center">🛒 Mon Panier</h2>
-        
-      {/* Affichage des messages de transaction (succès/erreur) */}
+    <Container sx={{ mt: 6, mb: 6, maxWidth: 900, fontFamily: "Montserrat, sans-serif" }}>
+      <Typography
+        variant="h4"
+        textAlign="center"
+        fontWeight="bold"
+        gutterBottom
+      >
+        Mon Panier
+      </Typography>
+
+      {/* messages de succès / erreur */}
       {message && (
-        <div className={`p-3 mb-4 rounded-lg text-center ${message.includes('succès') ? 'bg-green-100 text-green-700' : 'bg-red-100 text-red-700'}`}>
-            {message}
-        </div>
+        <Alert severity={message.type} sx={{ mb: 3 }}>
+          {message.text}
+        </Alert>
       )}
 
-      {tickets.length === 0 ? (
-        <p className="text-center">
-          Votre panier est vide.{" "}
-          <Link to="/matches" className="text-blue-600 hover:underline">
-            Retour aux matchs
-          </Link>
-        </p>
-      ) : (
-        <>
-          <div className="overflow-x-auto shadow-lg rounded-2xl">
-            <table className="w-full text-sm text-left border border-gray-200">
-              <thead className="bg-gray-100 text-gray-700 uppercase">
-                <tr>
-                  <th className="px-4 py-3">Match</th>
-                  <th className="px-4 py-3">Catégorie</th>
-                  <th className="px-4 py-3">Quantité</th>
-                  <th className="px-4 py-3">Prix unitaire (€)</th>
-                  <th className="px-4 py-3">Total (€)</th>
-                  <th className="px-4 py-3 text-center">Actions</th>
-                </tr>
-              </thead>
-              <tbody>
-                {Array.isArray(tickets) && tickets.map((ticket) => (
-                  <tr
-                    key={ticket.id}
-                    className="border-b hover:bg-gray-50 transition"
-                  >
-                    <td className="px-4 py-3">
-                      {ticket.match?.homeTeam.name} vs {ticket.match?.awayTeam.name}
-                    </td>
-                    <td className="px-4 py-3">{ticket.category.replace("CATEGORY_", "")}</td>
-                    <td className="px-4 py-3 text-center">1</td>
-                    <td className="px-4 py-3">{ticket.price.toFixed(2)}</td>
-                    <td className="px-4 py-3">{ticket.price.toFixed(2)}</td>
-                    <td className="px-4 py-3 text-center">
-                      <button
-                        onClick={() => {
-                          setModalType("delete");
-                          setSelectedTicketId(ticket.id); 
-                        }}
-                        className="px-3 py-1 bg-red-100 text-red-700 rounded-lg hover:bg-red-200 transition"
-                      >
-                        🗑️ Supprimer
-                      </button>
-                    </td>
-                  </tr>
-                ))}
-              </tbody>
-            </table>
-          </div>
+      <Box
+        sx={{
+          display: "grid",
+          gridTemplateColumns: "repeat(auto-fit, minmax(380px, 1fr))",
+          gap: 3,
+          mt: 4,
+        }}
+      >
+        {tickets.map((ticket) => (
+          <Card key={ticket.id} sx={{ borderRadius: 3, boxShadow: 3 }}>
+            <CardContent sx={{ p: 3 }}>
+              <Box sx={{ mb: 1 }}>
+                <Chip
+                  label={`Catégorie ${ticket.category.replace("CATEGORY_", "")}`}
+                  color="primary"
+                  size="small"
+                />
+              </Box>
 
-          <div className="flex justify-between items-center mt-6">
-            <h3 className="text-lg font-semibold">
-              Total du panier :{" "}
-              <span className="text-blue-600">{totalAmount.toFixed(2)} €</span>
-            </h3>
-            <button
-              onClick={() => setModalType("pay")} 
-              className="bg-blue-600 hover:bg-blue-700 text-white px-5 py-2 rounded-lg shadow-md transition"
-            >
-              💳 Payer tous les tickets
-            </button>
-          </div>
-        </>
-      )}
-        
-      {/* Modale de Suppression */}
+              <Typography variant="h6" fontWeight="bold">
+                Match n° {ticket.matchId}
+              </Typography>
+
+              <Box sx={{ mt: 2 }}>
+                <Typography>Quantité : {ticket.quantity ?? 1}</Typography>
+                <Typography>
+                  Prix unitaire : <b>{ticket.price.toFixed(2)} €</b>
+                </Typography>
+                <Typography>
+                  Total : <b style={{ color: "rgba(4, 86, 148, 1)" }}>{ticket.price.toFixed(2)} €</b>
+                </Typography>
+              </Box>
+
+              <Box sx={{ textAlign: "right", mt: 3 }}>
+                <Button
+                  variant="outlined"
+                  color="error"
+                  onClick={() => {
+                    setModalType("delete");
+                    setSelectedTicketId(ticket.id);
+                  }}
+                >
+                  Supprimer
+                </Button>
+              </Box>
+            </CardContent>
+          </Card>
+        ))}
+      </Box>
+
+      {/* total et paiement */}
+      <Box
+        sx={{
+          mt: 5,
+          display: "flex",
+          justifyContent: "space-between",
+          alignItems: "center",
+        }}
+      >
+        <Typography variant="h6">
+          Total du panier : <span style={{ color: "rgba(6, 112, 193, 1)" }}>{totalAmount.toFixed(2)} €</span>
+        </Typography>
+
+        <Button
+          variant="contained"
+          color="primary"
+          sx={{ px: 4, py: 1.5 }}
+          onClick={() => setModalType("pay")}
+        >
+          Payer tous les tickets
+        </Button>
+      </Box>
+
+      {/* Modale suppression */}
       {modalType === "delete" && selectedTicketId && (
         <ModalConfirm
-            title="Supprimer le ticket ?"
-            message="Voulez-vous supprimer ce ticket du panier ?"
-            
-            onConfirm={() => handleRemove(selectedTicketId)} 
-            
-            onCancel={() => {
-              setModalType(null);
-              setSelectedTicketId(null);
-            }}
-            confirmText="Oui, supprimer"
-            cancelText="Annuler"
+          title="Supprimer le ticket ?"
+          message="Voulez-vous supprimer ce ticket du panier ?"
+          onConfirm={() => handleRemove(selectedTicketId)}
+          onCancel={() => {
+            setModalType(null);
+            setSelectedTicketId(null);
+          }}
+          confirmText="Oui, supprimer"
+          cancelText="Annuler"
         />
       )}
 
-      {/* Modale de Paiement */}
-      {modalType === "pay" && ( 
+      {/* Modale paiement */}
+      {modalType === "pay" && (
         <ModalConfirm
           title="Confirmer le paiement"
-          message={`Voulez-vous vraiment payer ces ${tickets.length} tickets pour un montant total de ${totalAmount.toFixed(2)} € ?`} 
-          
-            onCancel={() => setModalType(null)}
-          
-            onConfirm={handlePay}
+          message={`Voulez-vous vraiment payer ces ${tickets.length} tickets pour un montant total de ${totalAmount.toFixed(
+            2
+          )} € ?`}
+          onConfirm={handlePay}
+          onCancel={() => setModalType(null)}
         />
       )}
-    </div>
+    </Container>
   );
 }

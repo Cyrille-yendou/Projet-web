@@ -86,6 +86,7 @@ export default function NavigationBar(props: Props) {
             onClick={() => navigate('/')}
             sx={{
               backgroundColor: 'rgba(255, 255, 255, 0.2)',
+              fontFamily: "Montserrat, sans-serif",
               '&:hover': {
                 backgroundColor: 'rgba(96, 184, 251, 0.8)',
               },
@@ -101,6 +102,7 @@ export default function NavigationBar(props: Props) {
             onClick={() => navigate('/matches')}
             sx={{
               backgroundColor: 'rgba(255, 255, 255, 0.2)',
+              fontFamily: "Montserrat, sans-serif",
               '&:hover': {
                 backgroundColor: 'rgba(96, 184, 251, 0.8)',
               },
@@ -116,6 +118,7 @@ export default function NavigationBar(props: Props) {
             onClick={() => navigate('/teams')}
             sx={{
               backgroundColor: 'rgba(255, 255, 255, 0.2)',
+              fontFamily: "Montserrat, sans-serif",
               '&:hover': {
                 backgroundColor: 'rgba(96, 184, 251, 0.8)',
               },
@@ -131,6 +134,7 @@ export default function NavigationBar(props: Props) {
             onClick={() => navigate('/groups')}
             sx={{
               backgroundColor: 'rgba(255, 255, 255, 0.2)',
+              fontFamily: "Montserrat, sans-serif",
               '&:hover': {
                 backgroundColor: 'rgba(96, 184, 251, 0.8)',
               },
